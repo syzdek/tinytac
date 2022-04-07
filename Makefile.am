@@ -149,7 +149,9 @@ lib_libtinytac_a_SOURCES		= include/tinytac.h \
 					  lib/libtinytac/ldebug.c \
 					  lib/libtinytac/ldebug.h \
 					  lib/libtinytac/lmemory.c \
-					  lib/libtinytac/lmemory.h
+					  lib/libtinytac/lmemory.h \
+					  lib/libtinytac/lproto.c \
+					  lib/libtinytac/lproto.h
 
 
 # macros for lib/libtinytac.la
