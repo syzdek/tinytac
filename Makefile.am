@@ -74,7 +74,7 @@ lib_LIBRARIES				=
 man_MANS				=
 info_TEXINFOS				=
 noinst_LTLIBRARIES			=
-noinst_LIBRARIES			=
+noinst_LIBRARIES			= lib/libbindle.a
 noinst_HEADERS				= include/tinytac_compat.h
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
@@ -93,7 +93,7 @@ EXTRA					= lib/libtinytac.a \
 # lists
 AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	=
 BUILT_SOURCES				=
-TESTS					=
+TESTS					= $(LIBBINDLE_TESTS)
 XFAIL_TESTS				=
 EXTRA_MANS				=
 EXTRA_DIST				= $(doc_DATA) \
@@ -143,7 +143,8 @@ lib_libtinytac_a_DEPENDENCIES		= Makefile \
 lib_libtinytac_a_CPPFLAGS		= $(AM_CPPFLAGS) \
 					  -I$(srcdir)/lib/libtinytac
 lib_libtinytac_a_CFLAGS			= $(AM_CFLAGS)
-lib_libtinytac_a_SOURCES		= include/tinytac.h \
+lib_libtinytac_a_SOURCES		= $(lib_libbindle_a_SOURCES) \
+					  include/tinytac.h \
 					  include/tinytac_compat.h \
 					  lib/libtinytac/libtinytac.h \
 					  lib/libtinytac/ldebug.c \
@@ -179,9 +180,9 @@ src_tinytac_SOURCES			= $(noinst_HEADERS) $(include_HEADERS) \
 # Makefile includes
 GIT_PACKAGE_VERSION_DIR=include
 SUBST_EXPRESSIONS =
-include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-autotools.am
-include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-subst.am
-include $(srcdir)/@bindletools_srcdir@/build-aux/makefile-version.am
+include contrib/bindletools/build-aux/makefile-subst.am
+include contrib/bindletools/build-aux/makefile-version.am
+include contrib/bindletools/build-aux/makefile-libbindle.am
 
 
 # custom targets
