@@ -75,7 +75,8 @@ man_MANS				=
 info_TEXINFOS				=
 noinst_LTLIBRARIES			=
 noinst_LIBRARIES			= lib/libbindle.a
-noinst_HEADERS				= include/tinytac_compat.h
+noinst_HEADERS				= include/bindle_prefix.h \
+					  include/tinytac_compat.h
 noinst_PROGRAMS				=
 bin_PROGRAMS				=
 bin_SCRIPTS				=
@@ -92,7 +93,7 @@ EXTRA					= lib/libtinytac.a \
 
 # lists
 AM_INSTALLCHECK_STD_OPTIONS_EXEMPT	=
-BUILT_SOURCES				=
+BUILT_SOURCES				= include/bindle_prefix.h
 TESTS					= $(LIBBINDLE_TESTS)
 XFAIL_TESTS				=
 EXTRA_MANS				=
@@ -110,6 +111,7 @@ CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  $(bin_SCRIPTS) \
 					  $(sbin_SCRIPTS) \
 					  $(EXTRA_PROGRAMS) \
+					  include/bindle_prefix.h \
 					  @PACKAGE_TARNAME@-*.tar.* \
 					  @PACKAGE_TARNAME@-*.txz \
 					  @PACKAGE_TARNAME@-*.zip
@@ -144,6 +146,7 @@ lib_libtinytac_a_CPPFLAGS		= $(AM_CPPFLAGS) \
 					  -I$(srcdir)/lib/libtinytac
 lib_libtinytac_a_CFLAGS			= $(AM_CFLAGS)
 lib_libtinytac_a_SOURCES		= $(lib_libbindle_a_SOURCES) \
+					  include/bindle_prefix.h
 					  include/tinytac.h \
 					  include/tinytac_compat.h \
 					  lib/libtinytac/libtinytac.h \
@@ -170,8 +173,12 @@ lib_libtinytac_la_SOURCES		= $(lib_libtinytac_a_SOURCES)
 
 
 # macros for src/tinytac
-src_tinytac_DEPENDENCIES		= $(lib_LTLIBRARIES) $(noinst_LIBRARIES)
-src_tinytac_LDADD			= $(lib_LTLIBRARIES) $(noinst_LIBRARIES)
+src_tinytac_DEPENDENCIES		= $(lib_LTLIBRARIES) \
+					  $(lib_LIBRARIES) \
+					  $(noinst_LIBRARIES)
+src_tinytac_LDADD			= $(lib_LTLIBRARIES) \
+					  $(lib_LIBRARIES) \
+					  $(noinst_LIBRARIES)
 src_tinytac_SOURCES			= $(noinst_HEADERS) $(include_HEADERS) \
 					  src/ttu/tinytacutil.c \
 					  src/ttu/tinytacutil.h
@@ -187,6 +194,8 @@ include contrib/bindletools/build-aux/makefile-libbindle.am
 
 # custom targets
 .PHONY: examples
+
+dep: include/bindle_prefix.h
 
 git-clean:
 	git fsck --full --unreachable
