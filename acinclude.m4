@@ -161,6 +161,25 @@ AC_DEFUN([AC_TINYTAC_LIBTINYTAC],[dnl
 ])dnl
 
 
+# AC_TINYTAC_OPENSSL()
+# ______________________________________________________________________________
+AC_DEFUN([AC_TINYTAC_OPENSSL],[dnl
+
+   HAVE_OPENSSL=yes
+   AC_CHECK_HEADERS( [openssl/evp.h],                     [], [HAVE_OPENSSL=no] )
+   AC_SEARCH_LIBS(   [EVP_md5],                 [crypto], [], [HAVE_OPENSSL=no], [] )
+   AC_SEARCH_LIBS(   [EVP_DigestInit_ex],       [crypto], [], [HAVE_OPENSSL=no], [] )
+   AC_SEARCH_LIBS(   [EVP_DigestUpdate],        [crypto], [], [HAVE_OPENSSL=no], [] )
+   AC_SEARCH_LIBS(   [EVP_DigestFinal_ex],      [crypto], [], [HAVE_OPENSSL=no], [] )
+   AC_SEARCH_LIBS(   [EVP_MD_CTX_free],         [crypto], [], [HAVE_OPENSSL=no], [] )
+
+   if test "x${HAVE_OPENSSL}" != "xyes";then
+      AC_MSG_ERROR([unable to find OpenSSL])
+   fi
+])dnl
+
+
+
 # AC_TINYTAC_TINYTAC()
 # ______________________________________________________________________________
 AC_DEFUN([AC_TINYTAC_TINYTAC],[dnl
