@@ -117,7 +117,10 @@ CLEANFILES				= $(builddir)/a.out   $(srcdir)/a.out \
 					  @PACKAGE_TARNAME@-*.zip
 DISTCHECK_CONFIGURE_FLAGS		= --enable-strictwarnings \
 					  --enable-documentation \
-					  --enable-examples
+					  --enable-examples \
+					  LDFLAGS="$(LDFLAGS)" \
+					  CFLAGS="$(CFLAGS)" \
+					  CPPFLAGS="$(CPPFLAGS)"
 
 
 # conditional build
