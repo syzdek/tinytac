@@ -168,6 +168,7 @@ AC_DEFUN([AC_TINYTAC_OPENSSL],[dnl
    HAVE_OPENSSL=yes
    AC_CHECK_HEADERS( [openssl/evp.h],                     [], [HAVE_OPENSSL=no] )
    AC_SEARCH_LIBS(   [EVP_md5],                 [crypto], [], [HAVE_OPENSSL=no], [] )
+   AC_SEARCH_LIBS(   [EVP_Digest],              [crypto], [], [HAVE_OPENSSL=no], [] )
    AC_SEARCH_LIBS(   [EVP_DigestInit_ex],       [crypto], [], [HAVE_OPENSSL=no], [] )
    AC_SEARCH_LIBS(   [EVP_DigestUpdate],        [crypto], [], [HAVE_OPENSSL=no], [] )
    AC_SEARCH_LIBS(   [EVP_DigestFinal_ex],      [crypto], [], [HAVE_OPENSSL=no], [] )

@@ -84,7 +84,7 @@ pkgdata_DATA				=
 rfcdoc_DATA				=
 sbin_SCRIPTS				=
 sbin_PROGRAMS				=
-EXTRA_PROGRAMS				=
+EXTRA_PROGRAMS				= examples/md5-example
 EXTRA					= lib/libtinytac.a \
 					  lib/libtinytac.la \
 					  src/tinytac \
@@ -129,6 +129,7 @@ if ENABLE_DOCUMENATION
    rfcdoc_DATA				+= doc/rfc/rfc8907.txt
 endif
 if ENABLE_EXAMPLES
+   noinst_PROGRAMS			+= examples/md5-example
 endif
 if ENABLE_LIBTINYTAC
    include_HEADERS			+= include/tinytac.h
@@ -140,6 +141,10 @@ endif
 if ENABLE_TINYTAC
    bin_PROGRAMS				+= src/tinytac
 endif
+
+
+# macros for examples/md5-example
+examples_md5_example_SOURCES		= examples/md5-example.c
 
 
 # macros for lib/libtinytac.a
