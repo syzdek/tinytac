@@ -190,7 +190,7 @@ AC_BINDLE_GIT_PACKAGE_VERSION([contrib/bindletools/build-aux/git-package-version
 
 # custom configure options
 AC_BINDLE_ENABLE_WARNINGS([-Wno-unknown-pragmas -Wno-missing-format-attribute -Wno-poison-system-directories], [], [c11])
-AC_BINDLE_LIBBINDLE([tinytac_bndl_])
+AC_BINDLE_LIBBINDLE([tinytacb_])
 AC_TINYTAC_IPV4
 AC_TINYTAC_IPV6
 AC_TINYTAC_LIBTINYTAC
