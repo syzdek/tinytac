@@ -135,6 +135,7 @@ if ENABLE_EXAMPLES
 endif
 if ENABLE_LIBTINYTAC
    include_HEADERS			+= include/tinytac.h
+   include_HEADERS			+= include/tinytac_plus.h
    lib_LTLIBRARIES			+= lib/libtinytac.la
 else
    noinst_HEADERS			+= include/tinytac.h
@@ -162,6 +163,7 @@ lib_libtinytac_a_CFLAGS			= $(AM_CFLAGS)
 lib_libtinytac_a_SOURCES		= $(lib_libbindle_a_SOURCES) \
 					  include/bindle_prefix.h \
 					  include/tinytac.h \
+					  include/tinytac_plus.h \
 					  include/tinytac_compat.h \
 					  lib/libtinytac/libtinytac.h \
 					  lib/libtinytac/ldebug.c \
