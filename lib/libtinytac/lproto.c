@@ -106,4 +106,44 @@ tinytac_pckt_md5pad(
    return(0);
 }
 
+
+int
+tinytac_pckt_obfuscate(
+         tinytac_pckt_t *              pckt,
+         char *                        key,
+         size_t                        key_len,
+         unsigned                      unencrypted )
+{
+   uint8_t        md_value[EVP_MAX_MD_SIZE];
+   size_t         pckt_len;
+   size_t         off;
+   size_t         pos;
+
+   assert(pckt != NULL);
+   assert(key  != NULL);
+
+   // check for existing obfuscation and flip flag
+   unencrypted = (unencrypted == TTAC_NO) ? 0 : TAC_PLUS_FLAG_UNENCRYPTED;
+   if ((pckt->pckt_flags & TAC_PLUS_FLAG_UNENCRYPTED) == unencrypted)
+      return(0);
+   pckt->pckt_flags ^= TAC_PLUS_FLAG_UNENCRYPTED;
+
+   // create initial pad
+   tinytac_pckt_md5pad(pckt, key, key_len, NULL, md_value);
+   pckt_len = ntohl(pckt->pckt_length);
+
+   // apply pads to packet body
+   for(off = 0; ((pckt_len - off) > 15); off += 16)
+   {
+      for(pos = 0; (pos < 16); pos++)
+         pckt->pckt_body[off+pos] ^= md_value[pos];
+      tinytac_pckt_md5pad(pckt, key, key_len, md_value, md_value);
+   };
+   for(pos = 0; ((pos+off) < pckt_len); pos++)
+      pckt->pckt_body[off+pos] ^= md_value[pos];
+
+   return(0);
+}
+
+
 /* end of source */

@@ -220,4 +220,20 @@ tinytac_pckt_md5pad(
          uint8_t *                     md5pad_prev,
          uint8_t *                     md5pad );
 
+
+/// obfuscate or unobfuscate packet using shared secret key
+///
+/// @param[in]  pckt          packet used to generate psuedo-random pad
+/// @param[in]  key           shared secret key used to protect the communication
+/// @param[in]  key_len       length of shared secret key
+/// @param[in]  unencrypted   packet should not be obfuscated (TTAC_YES or TTAC_NO)
+///
+/// @return    Returns 0 on success or -1 on error.
+_TINYTAC_F int
+tinytac_pckt_obfuscate(
+         tinytac_pckt_t *              pckt,
+         char *                        key,
+         size_t                        key_len,
+         unsigned                      unencrypted );
+
 #endif /* end of header */

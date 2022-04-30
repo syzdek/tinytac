@@ -36,4 +36,5 @@ tinytac_initialize
 #
 # protocol functions
 tinytac_pckt_md5pad
+tinytac_pckt_obfuscate
 # end of symbol export file
