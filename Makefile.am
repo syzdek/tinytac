@@ -160,7 +160,7 @@ lib_libtinytac_a_CPPFLAGS		= $(AM_CPPFLAGS) \
 					  -I$(srcdir)/lib/libtinytac
 lib_libtinytac_a_CFLAGS			= $(AM_CFLAGS)
 lib_libtinytac_a_SOURCES		= $(lib_libbindle_a_SOURCES) \
-					  include/bindle_prefix.h
+					  include/bindle_prefix.h \
 					  include/tinytac.h \
 					  include/tinytac_compat.h \
 					  lib/libtinytac/libtinytac.h \
