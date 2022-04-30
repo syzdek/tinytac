@@ -33,4 +33,7 @@
 # memory functions
 tinytac_free
 tinytac_initialize
+#
+# protocol functions
+tinytac_pckt_md5pad
 # end of symbol export file

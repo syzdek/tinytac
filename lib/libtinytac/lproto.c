@@ -52,14 +52,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <assert.h>
-
-
-///////////////////
-//               //
-//  Definitions  //
-//               //
-///////////////////
-#pragma mark - Definitions
+#include <openssl/evp.h>
 
 
 //////////////////
@@ -69,25 +62,6 @@
 //////////////////
 #pragma mark - Prototypes
 
-//--------------------//
-// TinyTac prototypes //
-//--------------------//
-#pragma mark TinyTac prototypes
-
-
-//-------------------//
-// object prototypes //
-//-------------------//
-#pragma mark object prototypes
-
-
-/////////////////
-//             //
-//  Variables  //
-//             //
-/////////////////
-#pragma mark - Variables
-
 
 /////////////////
 //             //
@@ -96,10 +70,40 @@
 /////////////////
 #pragma mark - Functions
 
-//-------------------//
-// TinyTac functions //
-//-------------------//
-#pragma mark TinyTac functions
+//------------------//
+// packet functions //
+//------------------//
+#pragma mark packet functions
 
+int
+tinytac_pckt_md5pad(
+         tinytac_pckt_t *              pckt,
+         char *                        key,
+         size_t                        key_len,
+         uint8_t *                     md5pad_prev,
+         uint8_t *                     md5pad )
+{
+   unsigned             md_len;
+   EVP_MD_CTX *         mdctx;
+
+   assert(pckt    != NULL);
+   assert(key     != NULL);
+   assert(md5pad  != NULL);
+
+   key_len = ((key)) ? key_len : 0;
+
+   mdctx = EVP_MD_CTX_new();
+   EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
+   EVP_DigestUpdate(mdctx, &pckt->pckt_session_id, 4);
+   EVP_DigestUpdate(mdctx, key, key_len);
+   EVP_DigestUpdate(mdctx, &pckt->pckt_version, 1);
+   EVP_DigestUpdate(mdctx, &pckt->pckt_seq_no, 1);
+   if ((md5pad_prev))
+      EVP_DigestUpdate(mdctx, md5pad_prev, 16);
+   EVP_DigestFinal_ex(mdctx, md5pad, &md_len);
+   EVP_MD_CTX_free(mdctx);
+
+   return(0);
+}
 
 /* end of source */

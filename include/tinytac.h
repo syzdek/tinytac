@@ -205,6 +205,19 @@
 #pragma mark - Data Types
 
 typedef struct _tinytac                   TinyTac;
+typedef struct _tinytac_packet            tinytac_pckt_t;
+
+
+struct _tinytac_packet
+{
+   uint8_t              pckt_version;  // 4 bits major and 4 bits minor
+   uint8_t              pckt_type;
+   uint8_t              pckt_seq_no;
+   uint8_t              pckt_flags;
+   uint32_t             pckt_session_id;
+   uint32_t             pckt_length;
+   uint8_t              pckt_body[];
+};
 
 
 //////////////////
@@ -244,5 +257,27 @@ tinytac_set_option(
          int                           option,
          const void *                  invalue );
 
+
+//---------------------//
+// protocol prototypes //
+//---------------------//
+#pragma mark protocol prototypes
+
+/// generates pseudo-random pad used to obfuscate the packet body
+///
+/// @param[in]  pckt          packet used to generate psuedo-random pad
+/// @param[in]  key           shared secret key used to protect the communication
+/// @param[in]  key_len       length of shared secret key
+/// @param[in]  md5pad_prev   previously generated psuedo-random pad (must be 16 bytes)
+/// @param[out] md5pad        buffer to store generated
+///
+/// @return    Returns 0 on success or -1 on error.
+_TINYTAC_F int
+tinytac_pckt_md5pad(
+         tinytac_pckt_t *              pckt,
+         char *                        key,
+         size_t                        key_len,
+         uint8_t *                     md5pad_prev,
+         uint8_t *                     md5pad );
 
 #endif /* end of header */
