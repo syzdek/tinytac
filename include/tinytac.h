@@ -146,6 +146,13 @@
 
 typedef struct _tinytac                   TinyTac;
 typedef struct _tinytac_packet            tinytac_pckt_t;
+typedef struct _tinytac_authen_start      tinytac_authen_start_t;
+typedef struct _tinytac_authen_reply      tinytac_authen_reply_t;
+typedef struct _tinytac_authen_continue   tinytac_authen_cont_t;
+typedef struct _tinytac_author_request    tinytac_author_req_t;
+typedef struct _tinytac_author_reply      tinytac_author_reply_t;
+typedef struct _tinytac_account_request   tinytac_acct_req_t;
+typedef struct _tinytac_account_reply     tinytac_acct_reply_t;
 
 
 struct _tinytac_packet
@@ -157,6 +164,87 @@ struct _tinytac_packet
    uint32_t             pckt_session_id;
    uint32_t             pckt_length;
    uint8_t              pckt_body[];
+};
+
+
+struct _tinytac_authen_start
+{
+   uint8_t              bdy_action;
+   uint8_t              bdy_priv_lvl;
+   uint8_t              bdy_authen_type;
+   uint8_t              bdy_authen_service;
+   uint8_t              bdy_user_len;
+   uint8_t              bdy_port_len;
+   uint8_t              bdy_rem_addr_len;
+   uint8_t              bdy_data_len;
+   uint8_t              bdy_bytes[];
+};
+
+
+struct _tinytac_authen_reply
+{
+   uint8_t              bdy_status;
+   uint8_t              bdy_flags;
+   uint16_t             bdy_server_msg_len;
+   uint16_t             bdy_data_len;
+   uint8_t              bdy_bytes[];
+};
+
+
+struct _tinytac_authen_continue
+{
+   uint16_t             bdy_user_msg_len;
+   uint16_t             bdy_data_len;
+   uint8_t              bdy_flags;
+   uint8_t              bdy_bytes[];
+};
+
+
+struct _tinytac_author_request
+{
+   uint8_t              bdy_authen_method;
+   uint8_t              bdy_priv_lvl;
+   uint8_t              bdy_authen_type;
+   uint8_t              bdy_authen_service;
+   uint8_t              bdy_user_len;
+   uint8_t              bdy_port_len;
+   uint8_t              bdy_rem_addr_len;
+   uint8_t              bdy_arg_cnt;
+   uint8_t              bdy_bytes[];
+};
+
+
+struct _tinytac_author_reply
+{
+   uint8_t              bdy_status;
+   uint8_t              bdy_arg_cnt;
+   uint16_t             bdy_server_msg_len;
+   uint16_t             bdy_data_len;
+   uint8_t              bdy_bytes[];
+};
+
+
+struct _tinytac_account_request
+{
+   uint8_t              bdy_flags;
+   uint8_t              bdy_authen_method;
+   uint8_t              bdy_priv_lvl;
+   uint8_t              bdy_authen_type;
+   uint8_t              bdy_authen_service;
+   uint8_t              bdy_user_len;
+   uint8_t              bdy_port_len;
+   uint8_t              bdy_rem_addr_len;
+   uint8_t              bdy_arg_cnt;
+   uint8_t              bdy_bytes[];
+};
+
+
+struct _tinytac_account_reply
+{
+   uint16_t             bdy_server_msg_len;
+   uint16_t             bdy_data_len;
+   uint8_t              bdy_status;
+   uint8_t              bdy_bytes[];
 };
 
 
