@@ -67,106 +67,6 @@
 //////////////////
 #pragma mark - Data Types
 
-// RFC 8907 Section 4.1. The TACACS+ Packet Header
-typedef struct tinytac_header
-{
-   uint8_t              pckt_version;  // 4 bits major and 4 bits minor
-   uint8_t              pckt_type;
-   uint8_t              pckt_seq_no;
-   uint8_t              pckt_flags;
-   uint32_t             pckt_session_id;
-   uint32_t             pckt_length;
-   uint8_t              pckt_body[];
-} tinyrad_header_t;
-
-
-// RFC 8907 Section 5.1. The Authentication START Packet Body
-typedef struct tinytac_packet_authen_start
-{
-   uint8_t              bdy_action;
-   uint8_t              bdy_priv_lvl;
-   uint8_t              bdy_authen_type;
-   uint8_t              bdy_authen_service;
-   uint8_t              bdy_user_len;
-   uint8_t              bdy_port_len;
-   uint8_t              bdy_rem_addr_len;
-   uint8_t              bdy_data_len;
-   uint8_t              bdy_bytes[];
-} tinyrad_authen_start_t;
-
-
-// RFC 8907 Section 5.2. The Authentication REPLY Packet Body
-typedef struct tinytac_packet_authen_reply
-{
-   uint8_t              bdy_status;
-   uint8_t              bdy_flags;
-   uint16_t             bdy_server_msg_len;
-   uint16_t             bdy_data_len;
-   uint8_t              bdy_bytes[];
-} tinyrad_authen_reply_t;
-
-
-// RFC 8907 Section 5.3. The Authentication CONTINUE Packet Body
-typedef struct tinytac_packet_authen_continue
-{
-   uint16_t             bdy_user_msg_len;
-   uint16_t             bdy_data_len;
-   uint8_t              bdy_flags;
-   uint8_t              bdy_bytes[];
-} tinyrad_authen_contiue_t;
-
-
-// RFC 8907 Section 6.1. The Authorization REQUEST Packet Body
-typedef struct tinytac_packet_author_request
-{
-   uint8_t              bdy_authen_method;
-   uint8_t              bdy_priv_lvl;
-   uint8_t              bdy_authen_type;
-   uint8_t              bdy_authen_service;
-   uint8_t              bdy_user_len;
-   uint8_t              bdy_port_len;
-   uint8_t              bdy_rem_addr_len;
-   uint8_t              bdy_arg_cnt;
-   uint8_t              bdy_bytes[];
-} tinyrad_author_request_t;
-
-
-// RFC 8907 Section 6.2. The Authorization REPLY Packet Body
-typedef struct tinytac_packet_author_reply
-{
-   uint8_t              bdy_status;
-   uint8_t              bdy_arg_cnt;
-   uint16_t             bdy_server_msg_len;
-   uint16_t             bdy_data_len;
-   uint8_t              bdy_bytes[];
-} tinyrad_author_reply_t;
-
-
-// RFC 8907 Section 7.1. The Account REQUEST Packet Body
-typedef struct tinytac_packet_acct_reqeust
-{
-   uint8_t              bdy_flags;
-   uint8_t              bdy_authen_method;
-   uint8_t              bdy_priv_lvl;
-   uint8_t              bdy_authen_type;
-   uint8_t              bdy_authen_service;
-   uint8_t              bdy_user_len;
-   uint8_t              bdy_port_len;
-   uint8_t              bdy_rem_addr_len;
-   uint8_t              bdy_arg_cnt;
-   uint8_t              bdy_bytes[];
-} tinyrad_acct_request_t;
-
-
-// RFC 8907 Section 7.2. The Accounting REPLY Packet Body
-typedef struct tinytac_packet_acct_reply
-{
-   uint16_t             bdy_server_msg_len;
-   uint16_t             bdy_data_len;
-   uint8_t              bdy_status;
-   uint8_t              bdy_bytes[];
-} tinyrad_acct_reply_t;
-
 
 //////////////////
 //              //
@@ -174,11 +74,6 @@ typedef struct tinytac_packet_acct_reply
 //              //
 //////////////////
 #pragma mark - Prototypes
-
-//-------------------//
-// object prototypes //
-//-------------------//
-#pragma mark object prototypes
 
 
 #endif /* end of header */
