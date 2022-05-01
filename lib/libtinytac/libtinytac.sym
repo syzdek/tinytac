@@ -34,6 +34,10 @@
 tinytac_free
 tinytac_initialize
 #
+# network functions
+tinytac_recv
+tinytac_send
+#
 # protocol functions
 tinytac_pckt_md5pad
 tinytac_pckt_obfuscate

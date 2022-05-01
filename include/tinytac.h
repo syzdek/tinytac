@@ -286,6 +286,25 @@ tinytac_set_option(
          const void *                  invalue );
 
 
+//--------------------//
+// network prototypes //
+//--------------------//
+#pragma mark network prototypes
+
+_TINYTAC_F int
+tinytac_recv(
+         int                           s,
+         char *                        key,
+         tinytac_pckt_t **             pcktp );
+
+
+_TINYTAC_F int
+tinytac_send(
+         int                           s,
+         char *                        key,
+         tinytac_pckt_t *              pckt );
+
+
 //---------------------//
 // protocol prototypes //
 //---------------------//
