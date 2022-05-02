@@ -54,10 +54,11 @@
 ///////////////////
 #pragma mark - Definitions
 
-#define TTAC_MINOR_TO_VERSION( minor, ver ) ((ver & 0xff00) | ((minor & 0x00ff) << 0))
-#define TTAC_MAJOR_TO_VERSION( major, ver ) ((ver & 0x00ff) | ((major & 0x00ff) << 4))
-#define TTAC_VERSION_TO_MINOR( ver )        ((ver & 0x00ff) >> 0)
-#define TTAC_VERSION_TO_MAJOR( ver )        ((ver & 0xff00) >> 4)
+#define TTAC_VERSION( major, minor )         (((major & 0x0f) << 4) | (minor & 0x0f))
+#define TTAC_VERSION_MINOR( version, minor ) ((version & 0xf0) | (minor & 0x0f))
+#define TTAC_VERSION_MAJOR( version, major ) ((version & 0x0f) | ((major & 0x0f) << 4))
+#define TTAC_VERSION_TO_MINOR( version )     ((version & 0x0f) >> 0)
+#define TTAC_VERSION_TO_MAJOR( version )     ((version & 0xf0) >> 4)
 
 
 //////////////////
