@@ -75,6 +75,70 @@
 //------------------//
 #pragma mark packet functions
 
+void
+tinytac_pckt_hexdump(
+         FILE *                        fs,
+         tinytac_pckt_t *              pckt,
+         const char *                  prefix )
+{
+   uint8_t *         bytes;
+   unsigned          line;
+   unsigned          pos;
+   unsigned          pckt_len;
+   const char *      str;
+
+   bytes    = (void *)pckt;
+   pckt_len = ntohl(pckt->pckt_length) + sizeof(tinytac_pckt_t);
+   prefix   = ((prefix)) ? prefix : "";
+
+   fprintf(fs, "%spacket: version: %u.%u;", prefix, (pckt->pckt_version >> 4), (pckt->pckt_version & 0x0f));
+   switch(pckt->pckt_type)
+   {
+      case TAC_PLUS_TYPE_AUTHEN: str = "authen";  break;
+      case TAC_PLUS_TYPE_AUTHOR: str = "author";  break;
+      case TAC_PLUS_TYPE_ACCT:   str = "acct";    break;
+      default:                   str = "unknown"; break;
+   };
+   fprintf(fs, " type: %s;", str);
+   fprintf(fs, " seq_no: %u;", pckt->pckt_seq_no);
+   fprintf(fs, " session_id: %08x;", ntohl(pckt->pckt_session_id));
+   fprintf(fs, "\n%spacket: length: %u (0x%x);", prefix, pckt_len, pckt_len);
+   fprintf(fs, " flags:");
+   if (!(pckt->pckt_flags))
+      fprintf(fs, " NONE");
+   if ((pckt->pckt_flags & TAC_PLUS_FLAG_SINGLE_CONNECT))
+      fprintf(fs, " SINGLE-CONNECT");
+   if ((pckt->pckt_flags & TAC_PLUS_FLAG_UNENCRYPTED))
+      fprintf(fs, " UNENCRYPTED");
+   fprintf(fs, ";");
+   fprintf(fs, "\n");
+
+
+   fprintf(fs, "%s offset    0  1  2  3   4  5  6  7   8  9  a  b   c  d  e  f  0123456789abcdef\n", prefix);
+   for(line = 0; (line < pckt_len); line += 0x10)
+   {
+      fprintf(fs, "%s%08x", prefix, line);
+      for(pos = line; (pos < (line+0x10)); pos++)
+      {
+         if ((pos & 0x03) == 0)
+            fprintf(fs, " ");
+         if (pos < pckt_len)
+            fprintf(fs, " %02x", bytes[pos]);
+         else
+            fprintf(fs, "   ");
+      };
+      fprintf(fs, "  ");
+      for(pos = line; ((pos < (line+0x10)) && (pos < pckt_len)); pos++)
+         fprintf(fs, "%c", ((bytes[pos] < 0x20) || (bytes[pos] > 0x7e)) ? '.' : bytes[pos]);
+      fprintf(fs, "\n");
+      if ((line & 0xf0) == 0xf0)
+         fprintf(fs, "\n");
+   };
+
+   return;
+}
+
+
 int
 tinytac_pckt_md5pad(
          tinytac_pckt_t *              pckt,

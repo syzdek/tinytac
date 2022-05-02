@@ -310,6 +310,18 @@ tinytac_send(
 //---------------------//
 #pragma mark protocol prototypes
 
+/// prints hexdump of packet to file stream
+///
+/// @param[in]  fs            write hexdump to file stream 'fs'
+/// @param[in]  pckt          packet used to generate psuedo-random pad
+/// @param[in]  prefix        string to prepend to each line
+void
+tinytac_pckt_hexdump(
+         FILE *                        fs,
+         tinytac_pckt_t *              pckt,
+         const char *                  prefix );
+
+
 /// generates pseudo-random pad used to obfuscate the packet body
 ///
 /// @param[in]  pckt          packet used to generate psuedo-random pad

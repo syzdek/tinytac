@@ -39,6 +39,7 @@ tinytac_recv
 tinytac_send
 #
 # protocol functions
+tinytac_pckt_hexdump
 tinytac_pckt_md5pad
 tinytac_pckt_obfuscate
 # end of symbol export file
