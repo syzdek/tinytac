@@ -41,6 +41,8 @@
 
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
@@ -60,6 +62,58 @@
 //              //
 //////////////////
 #pragma mark - Prototypes
+
+
+/////////////////
+//             //
+//  Functions  //
+//             //
+/////////////////
+#pragma mark - Functions
+
+char *
+tinytac_ntop(
+         int                           s,
+         unsigned                      peer )
+{
+   struct sockaddr_storage    sa;
+   socklen_t                  sa_len;
+   char                       addrstr[INET6_ADDRSTRLEN];
+   static char                buff[INET6_ADDRSTRLEN+16];
+   int                        port;
+
+   sa_len = sizeof(sa);
+   if ((peer))
+   {
+      if (getpeername(s, (struct sockaddr *)&sa, &sa_len) == -1)
+         return(NULL);
+   } else {
+      if (getsockname(s, (struct sockaddr *)&sa, &sa_len) == -1)
+         return(NULL);
+   };
+
+   switch(sa.ss_family)
+   {
+      case AF_INET:
+      inet_ntop(AF_INET, &((const struct sockaddr_in *)&sa)->sin_addr, addrstr, sizeof(addrstr));
+      port = ntohs(((const struct sockaddr_in *)&sa)->sin_port);
+      snprintf(buff, (sizeof(buff)-1), "%s:%i", addrstr, port);
+      break;
+
+      case AF_INET6:
+      inet_ntop(AF_INET6, &((const struct sockaddr_in6 *)&sa)->sin6_addr, addrstr, sizeof(addrstr));
+      port = ntohs(((const struct sockaddr_in6 *)&sa)->sin6_port);
+      snprintf(buff, (sizeof(buff)-1), "[%s]:%i", addrstr, port);
+      break;
+
+      default:
+      return(NULL);
+   };
+   buff[sizeof(buff)-1] = '\0';
+
+   return(buff);
+}
+
 
 int
 tinytac_recv(

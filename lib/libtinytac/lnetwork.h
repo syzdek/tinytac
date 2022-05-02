@@ -57,5 +57,10 @@
 //////////////////
 #pragma mark - Prototypes
 
+char *
+tinytac_ntop(
+         int                           s,
+         unsigned                      peer );
+
 
 #endif /* end of header */
