@@ -55,8 +55,8 @@
 #define TAC_PLUS_TYPE_AUTHOR              0x02
 #define TAC_PLUS_TYPE_ACCT                0x03
 // flags
-#define TAC_PLUS_FLAG_UNENCRYPTED         0x01
-#define TAC_PLUS_FLAG_SINGLE_CONNECT      0x04
+#define TAC_PLUS_UNENCRYPTED_FLAG         0x01
+#define TAC_PLUS_SINGLE_CONNECT_FLAG      0x04
 
 
 // RFC8907 Section 5.1 The Authentication START Packet Body

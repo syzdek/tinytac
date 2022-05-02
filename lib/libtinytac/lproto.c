@@ -106,9 +106,9 @@ tinytac_pckt_hexdump(
    fprintf(fs, " flags:");
    if (!(pckt->pckt_flags))
       fprintf(fs, " NONE");
-   if ((pckt->pckt_flags & TAC_PLUS_FLAG_SINGLE_CONNECT))
+   if ((pckt->pckt_flags & TAC_PLUS_SINGLE_CONNECT_FLAG))
       fprintf(fs, " SINGLE-CONNECT");
-   if ((pckt->pckt_flags & TAC_PLUS_FLAG_UNENCRYPTED))
+   if ((pckt->pckt_flags & TAC_PLUS_UNENCRYPTED_FLAG))
       fprintf(fs, " UNENCRYPTED");
    fprintf(fs, ";");
    fprintf(fs, "\n");
@@ -187,10 +187,10 @@ tinytac_pckt_obfuscate(
    assert(key  != NULL);
 
    // check for existing obfuscation and flip flag
-   unencrypted = (unencrypted == TTAC_NO) ? 0 : TAC_PLUS_FLAG_UNENCRYPTED;
-   if ((pckt->pckt_flags & TAC_PLUS_FLAG_UNENCRYPTED) == unencrypted)
+   unencrypted = (unencrypted == TTAC_NO) ? 0 : TAC_PLUS_UNENCRYPTED_FLAG;
+   if ((pckt->pckt_flags & TAC_PLUS_UNENCRYPTED_FLAG) == unencrypted)
       return(0);
-   pckt->pckt_flags ^= TAC_PLUS_FLAG_UNENCRYPTED;
+   pckt->pckt_flags ^= TAC_PLUS_UNENCRYPTED_FLAG;
 
    // create initial pad
    tinytac_pckt_md5pad(pckt, key, key_len, NULL, md_value);
