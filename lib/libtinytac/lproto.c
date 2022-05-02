@@ -62,6 +62,13 @@
 //////////////////
 #pragma mark - Prototypes
 
+extern tinytac_pckt_t *
+tinytac_pckt_alloc(
+         uint8_t                       pckt_type,
+         uint8_t                       seq_no,
+         uint32_t                      session_id,
+         size_t                        nbytes );
+
 
 /////////////////
 //             //
@@ -74,6 +81,32 @@
 // packet functions //
 //------------------//
 #pragma mark packet functions
+
+tinytac_pckt_t *
+tinytac_pckt_alloc(
+         uint8_t                       pckt_type,
+         uint8_t                       seq_no,
+         uint32_t                      session_id,
+         size_t                        nbytes )
+{
+   tinytac_pckt_t *        pckt;
+   size_t                  size;
+
+   size = sizeof(tinytac_pckt_t) + nbytes;
+
+   if ((pckt = malloc(size)) == NULL)
+      return(NULL);
+   memset(pckt, 0, size);
+   pckt->pckt_version      = TTAC_VERSION(TAC_PLUS_MAJOR_VER, TAC_PLUS_MINOR_VER_DEFAULT);
+   pckt->pckt_type         = pckt_type;
+   pckt->pckt_seq_no       = seq_no;
+   pckt->pckt_flags        = TAC_PLUS_UNENCRYPTED_FLAG | TAC_PLUS_SINGLE_CONNECT_FLAG;
+   pckt->pckt_length       = htonl(nbytes);
+   pckt->pckt_session_id   = session_id;
+
+   return(pckt);
+}
+
 
 void
 tinytac_pckt_hexdump(
