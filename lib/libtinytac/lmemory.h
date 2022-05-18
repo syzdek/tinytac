@@ -55,6 +55,14 @@
 #pragma mark - Definitions
 
 
+/////////////////
+//             //
+//  Variables  //
+//             //
+/////////////////
+#pragma mark - Variables
+
+
 //////////////////
 //              //
 //  Prototypes  //
