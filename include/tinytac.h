@@ -113,8 +113,14 @@
 #define TTAC_NOINIT                 0x00000001U
 #define TTAC_IPV4                   0x00000002U
 #define TTAC_IPV6                   0x00000004U
-#define TTAC_IP_UNSPEC              (TRAD_IPV4 | TRAD_IPV6)
+#define TTAC_IP_UNSPEC              (TTAC_IPV4 | TTAC_IPV6)
 #define TTAC_SERVER                 0x00000080U
+#define TTAC_ASCII                  0x00000100U ///< allow ASCII authentication
+#define TTAC_PAP                    0x00000200U ///< allow PAP authentication
+#define TTAC_CHAP                   0x00000400U ///< allow CHAP authentication
+#define TTAC_MSCHAP                 0x00000800U ///< allow MSCHAP authentication
+#define TTAC_MSCHAPV2               0x00001000U ///< allow MSCHAPv2 authentication
+#define TTAC_AUTHEN_TYPES           (TTAC_ASCII | TTAC_PAP | TTAC_CHAP | TTAC_MSCHAP | TTAC_MSCHAPV2 )
 
 
 #define TTAC_NO                     0

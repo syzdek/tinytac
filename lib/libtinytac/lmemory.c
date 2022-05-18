@@ -146,7 +146,13 @@ tinytac_initialize(
 
    if ((tt = tinytac_obj_alloc(sizeof(TinyTac), (void(*)(void*))&tinytac_tiytac_free)) == NULL)
       return(TTAC_ENOMEM);
+
+   // adjust options
    tt->opts = opts;
+   if (!(tt->opts & TTAC_IP_UNSPEC))
+      tt->opts |= TTAC_IP_UNSPEC;
+   if (!(tt->opts & TTAC_AUTHEN_TYPES))
+      tt->opts |= TTAC_AUTHEN_TYPES;
 
    if ((tt->hosts = strdup(hosts)) == NULL)
    {
