@@ -275,7 +275,8 @@ tinytac_get_option(
 _TINYTAC_F int
 tinytac_initialize(
          TinyTac **                    ttp,
-         const char *                  url,
+         const char *                  hosts,
+         const char *                  key,
          unsigned                      opts );
 
 

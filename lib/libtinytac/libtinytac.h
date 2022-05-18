@@ -109,7 +109,8 @@ typedef struct _tinytac_obj
 struct _tinytac
 {
    TinyTacObj              obj;
-   char *                  url;
+   char *                  hosts;
+   char *                  key;
    unsigned                opts;
    unsigned                opts_neg;
 };

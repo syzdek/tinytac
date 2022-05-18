@@ -119,8 +119,10 @@ tinytac_tiytac_free(
 
    assert(tt != NULL);
 
-   if ((tt->url))
-      free(tt->url);
+   if ((tt->hosts))
+      free(tt->hosts);
+   if ((tt->key))
+      free(tt->key);
 
    memset(tt, 0, sizeof(TinyTac));
    free(tt);
@@ -132,7 +134,8 @@ tinytac_tiytac_free(
 int
 tinytac_initialize(
          TinyTac **                    ttp,
-         const char *                  url,
+         const char *                  hosts,
+         const char *                  key,
          unsigned                      opts )
 {
    TinyTac *         tt;
@@ -145,7 +148,12 @@ tinytac_initialize(
       return(TTAC_ENOMEM);
    tt->opts = opts;
 
-   if ((tt->url = strdup(url)) == NULL)
+   if ((tt->hosts = strdup(hosts)) == NULL)
+   {
+      tinytac_tiytac_free(tt);
+      return(TTAC_ENOMEM);
+   };
+   if ((tt->key = strdup(key)) == NULL)
    {
       tinytac_tiytac_free(tt);
       return(TTAC_ENOMEM);
