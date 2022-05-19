@@ -52,6 +52,7 @@
 #include <stdarg.h>
 
 #include <tinytac.h>
+#include <bindle_prefix.h>
 
 
 //////////////
