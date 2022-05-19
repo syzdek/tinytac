@@ -108,7 +108,8 @@
 #define TTAC_ENOBUFS                0x0006 ///< no buffer space available
 #define TTAC_EEXISTS                0x0007 ///< dictionary object exists
 #define TTAC_EINVAL                 0x0008 ///< invalid argument
-#define TTAC_EOPT                   0x0009 ///< invalid or unknown option
+#define TTAC_EOPTION                0x0009 ///< invalid or unknown option
+#define TTAC_EOPTVAL                0x000a ///< invalid option value
 
 
 // library user options

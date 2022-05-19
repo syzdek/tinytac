@@ -83,7 +83,8 @@ tinytac_error_map(
       case TTAC_ENOBUFS:      return("no buffer space available");
       case TTAC_EEXISTS:      return("dictionary object exists");
       case TTAC_EINVAL:       return("invalid argument");
-      case TTAC_EOPT:         return("invalid or unknown option");
+      case TTAC_EOPTION:      return("invalid or unknown option");
+      case TTAC_EOPTVAL:      return("invalid option value");
       default:
       break;
    };

@@ -218,7 +218,7 @@ tinytac_get_option(
       break;
    };
 
-   return(TTAC_EOPT);
+   return(TTAC_EOPTION);
 }
 
 
