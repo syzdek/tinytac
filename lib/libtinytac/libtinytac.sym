@@ -38,6 +38,7 @@ tinytac_strerror_r
 tinytac_free
 tinytac_get_option
 tinytac_initialize
+tinytac_set_option
 #
 # network functions
 tinytac_recv

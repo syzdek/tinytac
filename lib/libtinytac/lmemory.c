@@ -81,6 +81,19 @@ tinytac_tiytac_free(
          TinyTac *                     tt );
 
 
+static int
+tinytac_set_option_flag(
+         TinyTac *                     tt,
+         unsigned                      flag,
+         const int *                   invalue );
+
+
+static int
+tinytac_set_option_host(
+         TinyTac *                     tt,
+         const char *                  invalue );
+
+
 //-------------------//
 // object prototypes //
 //-------------------//
@@ -230,6 +243,7 @@ tinytac_initialize(
          unsigned                      opts )
 {
    TinyTac *         tt;
+   int               rc;
 
    TinyTacDebugTrace();
 
@@ -245,10 +259,10 @@ tinytac_initialize(
    if (!(tt->opts & TTAC_AUTHEN_TYPES))
       tt->opts |= TTAC_AUTHEN_TYPES;
 
-   if ((tt->hosts = strdup(hosts)) == NULL)
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_HOSTS, hosts)) != TTAC_SUCCESS)
    {
       tinytac_tiytac_free(tt);
-      return(TTAC_ENOMEM);
+      return(rc);
    };
    if ((tt->key = strdup(key)) == NULL)
    {
@@ -257,6 +271,133 @@ tinytac_initialize(
    };
 
    *ttp = tinytac_obj_retain(&tt->obj);
+
+   return(TTAC_SUCCESS);
+}
+
+
+int
+tinytac_set_option(
+         TinyTac *                     tt,
+         int                           option,
+         const void *                  invalue )
+{
+   int            ival;
+   const char *   istr;
+
+   TinyTacDebugTrace();
+
+   assert(invalue != NULL);
+
+   switch(option)
+   {
+      case TTAC_OPT_AUTHEN_ASCII:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_ASCII, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_ASCII, invalue));
+
+      case TTAC_OPT_AUTHEN_CHAP:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_CHAP, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_CHAP, invalue));
+
+      case TTAC_OPT_AUTHEN_MSCHAP:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_MSCHAP, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_MSCHAP, invalue));
+
+      case TTAC_OPT_AUTHEN_MSCHAPV2:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_MSCHAPV2, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_MSCHAPV2, invalue));
+
+      case TTAC_OPT_AUTHEN_PAP:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_PAP, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_PAP, invalue));
+
+      case TTAC_OPT_DEBUG_IDENT:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_DEBUG_IDENT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      istr = (((const char *)invalue)) ? ((const char *)invalue) : TTAC_DFLT_DEBUG_IDENT;
+      tinytacb_strlcpy(tinytac_debug_ident_buff, istr, sizeof(tinytac_debug_ident_buff));
+      tinytac_debug_ident = tinytac_debug_ident_buff;
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_DEBUG_LEVEL:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_DEBUG_LEVEL, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      ival = (((const int *)invalue)) ? *((const int *)invalue) : TTAC_DFLT_DEBUG_LEVEL;
+      tinytac_debug_level = ival;
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_DEBUG_SYSLOG:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_DEBUG_SYSLOG, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      ival = (((const int *)invalue)) ? *((const int *)invalue) : TTAC_DFLT_DEBUG_SYSLOG;
+      tinytac_debug_syslog = ((ival)) ? TTAC_YES : TTAC_NO;
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_HOSTS:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_HOSTS, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_host(tt, invalue));
+
+      default:
+      break;
+   };
+
+   return(TTAC_EOPTION);
+}
+
+
+int
+tinytac_set_option_flag(
+         TinyTac *                     tt,
+         unsigned                      flag,
+         const int *                   invalue )
+{
+   int            ival;
+   int            dflt;
+   unsigned *     optsp;
+   unsigned *     opts_negp;
+
+   TinyTacDebugTrace();
+
+   if (!(flag))
+      return(TTAC_SUCCESS);
+
+   dflt        = ((tt))       ? (tinytac_dflt_opts & flag)  : (flag & TTAC_DFLT_OPTS);
+   ival        = ((invalue))  ? *invalue                    : dflt;
+   optsp       = ((tt))       ? &tt->opts                   : &tinytac_dflt_opts;
+   opts_negp   = ((tt))       ? &tt->opts_neg               : &tinytac_dflt_opts_neg;
+
+   if ((ival))
+   {
+      *optsp      |= flag;
+      *opts_negp  ^= flag;
+   } else {
+      *optsp      ^= flag;
+      *opts_negp  |= flag;
+   };
+
+   return(TTAC_SUCCESS);
+}
+
+
+int
+tinytac_set_option_host(
+         TinyTac *                     tt,
+         const char *                  invalue )
+{
+   char *      ostr;
+
+   TinyTacDebugTrace();
+
+   if ((tt))
+   {
+      invalue = ((invalue)) ? invalue : TTAC_DFLT_HOSTS;
+      tinytacb_strlcpy(tinytac_dflt_hosts_buff, invalue, sizeof(tinytac_dflt_hosts_buff));
+      tinytac_dflt_hosts = tinytac_dflt_hosts_buff;
+      return(TTAC_SUCCESS);
+   };
+
+   invalue = ((invalue)) ? invalue : tinytac_dflt_hosts;
+   if ((ostr = tinytacb_strdup(invalue)) == NULL)
+      return(TTAC_ENOMEM);
+   free(tt->hosts);
+   tt->hosts = ostr;
 
    return(TTAC_SUCCESS);
 }
