@@ -168,6 +168,8 @@ lib_libtinytac_a_SOURCES		= $(lib_libbindle_a_SOURCES) \
 					  lib/libtinytac/libtinytac.h \
 					  lib/libtinytac/ldebug.c \
 					  lib/libtinytac/ldebug.h \
+					  lib/libtinytac/lerror.c \
+					  lib/libtinytac/lerror.h \
 					  lib/libtinytac/lmemory.c \
 					  lib/libtinytac/lmemory.h \
 					  lib/libtinytac/lnetwork.c \

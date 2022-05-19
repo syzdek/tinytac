@@ -30,6 +30,10 @@
 #
 #   lib/libtinytac/libtinytac.sym - list of symbols to export
 #
+# error functions
+tinytac_strerror
+tinytac_strerror_r
+#
 # memory functions
 tinytac_free
 tinytac_initialize

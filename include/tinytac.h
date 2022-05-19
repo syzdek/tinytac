@@ -107,6 +107,8 @@
 #define TTAC_ESYNTAX                0x0005 ///< invalid or unrecognized syntax
 #define TTAC_ENOBUFS                0x0006 ///< no buffer space available
 #define TTAC_EEXISTS                0x0007 ///< dictionary object exists
+#define TTAC_EINVAL                 0x0008 ///< invalid argument
+#define TTAC_EOPT                   0x0009 ///< invalid or unknown option
 
 
 // library user options
@@ -260,6 +262,23 @@ struct _tinytac_account_reply
 //              //
 //////////////////
 #pragma mark - Prototypes
+
+//------------------//
+// error prototypes //
+//------------------//
+#pragma mark error prototypes
+
+_TINYTAC_F char *
+tinytac_strerror(
+         int                           errnum );
+
+
+_TINYTAC_F char *
+tinytac_strerror_r(
+         int                           errnum,
+         char *                        strerrbuf,
+         size_t                        buflen );
+
 
 //-------------------//
 // memory prototypes //
