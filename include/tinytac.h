@@ -129,6 +129,19 @@
 #define TTAC_YES                    1
 
 
+// library get/set options
+#define TTAC_OPT_DEBUG_LEVEL        1
+#define TTAC_OPT_DEBUG_IDENT        2
+#define TTAC_OPT_DEBUG_SYSLOG       3
+#define TTAC_OPT_HOSTS              10
+#define TTAC_OPT_SECRETS            11
+#define TTAC_OPT_AUTHEN_ASCII       20
+#define TTAC_OPT_AUTHEN_PAP         21
+#define TTAC_OPT_AUTHEN_CHAP        22
+#define TTAC_OPT_AUTHEN_MSCHAP      23
+#define TTAC_OPT_AUTHEN_MSCHAPV2    24
+
+
 // library debug levels
 #define TTAC_DEBUG_NONE             0
 #define TTAC_DEBUG_TRACE            0x0000001
@@ -143,6 +156,10 @@
 #define TTAC_DFLT_DEBUG_IDENT             "libtinytac"
 #define TTAC_DFLT_DEBUG_LEVEL             TTAC_DEBUG_NONE
 #define TTAC_DFLT_DEBUG_SYSLOG            TTAC_NO
+#define TTAC_DFLT_HOSTS                   "localhost"
+#define TTAC_DFLT_SECRETS                 NULL
+#define TTAC_DFLT_OPTS                    0
+#define TTAC_DFLT_OPTS_NEG                0
 
 
 //////////////////

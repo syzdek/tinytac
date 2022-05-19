@@ -36,6 +36,7 @@ tinytac_strerror_r
 #
 # memory functions
 tinytac_free
+tinytac_get_option
 tinytac_initialize
 #
 # network functions
