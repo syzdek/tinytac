@@ -111,7 +111,7 @@ struct _tinytac
 {
    TinyTacObj              obj;
    char *                  hosts;
-   char *                  key;
+   char **                 keys;
    unsigned                opts;
    unsigned                opts_neg;
 };

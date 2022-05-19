@@ -135,7 +135,8 @@
 #define TTAC_OPT_DEBUG_IDENT        2
 #define TTAC_OPT_DEBUG_SYSLOG       3
 #define TTAC_OPT_HOSTS              10
-#define TTAC_OPT_SECRETS            11
+#define TTAC_OPT_KEY                11
+#define TTAC_OPT_KEYS               12
 #define TTAC_OPT_AUTHEN_ASCII       20
 #define TTAC_OPT_AUTHEN_PAP         21
 #define TTAC_OPT_AUTHEN_CHAP        22

@@ -94,6 +94,13 @@ tinytac_set_option_host(
          const char *                  invalue );
 
 
+static int
+tinytac_set_option_keys(
+         TinyTac *                     tt,
+         const char *                  invalue,
+         char * const *                invalues );
+
+
 //-------------------//
 // object prototypes //
 //-------------------//
@@ -115,6 +122,7 @@ const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
 char                    tinytac_dflt_hosts_buff[128];
 unsigned                tinytac_dflt_opts       = TTAC_DFLT_OPTS;
 unsigned                tinytac_dflt_opts_neg   = TTAC_DFLT_OPTS_NEG;
+char **                 tinytac_dflt_keys       = NULL;
 
 
 /////////////////
@@ -139,8 +147,8 @@ tinytac_tiytac_free(
 
    if ((tt->hosts))
       free(tt->hosts);
-   if ((tt->key))
-      free(tt->key);
+   if ((tt->keys))
+      tinytacb_strsfree(tt->keys);
 
    memset(tt, 0, sizeof(TinyTac));
    free(tt);
@@ -264,10 +272,10 @@ tinytac_initialize(
       tinytac_tiytac_free(tt);
       return(rc);
    };
-   if ((tt->key = strdup(key)) == NULL)
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_KEY, key)) != TTAC_SUCCESS)
    {
       tinytac_tiytac_free(tt);
-      return(TTAC_ENOMEM);
+      return(rc);
    };
 
    *ttp = tinytac_obj_retain(&tt->obj);
@@ -334,6 +342,14 @@ tinytac_set_option(
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_HOSTS, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       return(tinytac_set_option_host(tt, invalue));
 
+      case TTAC_OPT_KEY:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEY, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_keys(tt, invalue, NULL));
+
+      case TTAC_OPT_KEYS:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEYS, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_keys(tt, NULL, invalue));
+
       default:
       break;
    };
@@ -398,6 +414,44 @@ tinytac_set_option_host(
       return(TTAC_ENOMEM);
    free(tt->hosts);
    tt->hosts = ostr;
+
+   return(TTAC_SUCCESS);
+}
+
+
+int
+tinytac_set_option_keys(
+         TinyTac *                     tt,
+         const char *                  invalue,
+         char * const *                invalues )
+{
+   char ***       strsp;
+   char **        strs;
+
+   TinyTacDebugTrace();
+
+   strs     = NULL;
+   strsp    = ((tt)) ? &tt->keys : &tinytac_dflt_keys;
+
+   if ((invalue))
+   {
+      if (tinytacb_strsadd(&strs, invalue) != 0)
+         return(TTAC_ENOMEM);
+   }
+   else if ((invalues))
+   {
+      if (tinytacb_strsdup(&strs, invalues) != 0)
+         return(TTAC_ENOMEM);
+   }
+   else if ((tt))
+   {
+      if ((tinytac_dflt_keys))
+         if (tinytacb_strsdup(&strs, tinytac_dflt_keys) != 0)
+            return(TTAC_ENOMEM);
+   };
+
+   tinytacb_strsfree(*strsp);
+   *strsp = strs;
 
    return(TTAC_SUCCESS);
 }
