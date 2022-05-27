@@ -111,6 +111,7 @@ struct _tinytac
 {
    TinyTacObj              obj;
    char *                  hosts;
+   BindleURLDesc **        budps;
    char **                 keys;
    unsigned                opts;
    unsigned                opts_neg;

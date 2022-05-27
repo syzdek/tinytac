@@ -81,6 +81,11 @@ tinytac_tinytac_free(
          TinyTac *                     tt );
 
 
+static void
+tinytac_tinytac_free_budps(
+         BindleURLDesc **              budps );
+
+
 static int
 tinytac_set_option_flag(
          TinyTac *                     tt,
@@ -150,9 +155,25 @@ tinytac_tinytac_free(
    if ((tt->keys))
       tinytacb_strsfree(tt->keys);
 
+   tinytac_tinytac_free_budps(tt->budps);
+
    memset(tt, 0, sizeof(TinyTac));
    free(tt);
 
+   return;
+}
+
+
+void
+tinytac_tinytac_free_budps(
+         BindleURLDesc **              budps )
+{
+   size_t pos;
+   if (!(budps))
+      return;
+   for(pos = 0; ((budps[pos])); pos++)
+      tinytacb_urldesc_free(budps[pos]);
+   free(budps);
    return;
 }
 
