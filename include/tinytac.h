@@ -162,6 +162,7 @@
 #define TTAC_DFLT_SECRETS                 NULL
 #define TTAC_DFLT_OPTS                    0
 #define TTAC_DFLT_OPTS_NEG                0
+#define TTAC_DFLT_PORT                    49
 
 
 //////////////////
