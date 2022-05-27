@@ -117,7 +117,6 @@ struct _tinytac
 };
 
 
-
 /////////////////
 //             //
 //  Variables  //
