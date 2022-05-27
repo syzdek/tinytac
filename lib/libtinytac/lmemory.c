@@ -77,7 +77,7 @@
 #pragma mark TinyTac prototypes
 
 extern void
-tinytac_tiytac_free(
+tinytac_tinytac_free(
          TinyTac *                     tt );
 
 
@@ -138,7 +138,7 @@ char **                 tinytac_dflt_keys       = NULL;
 #pragma mark TinyTac functions
 
 void
-tinytac_tiytac_free(
+tinytac_tinytac_free(
          TinyTac *                     tt )
 {
    TinyTacDebugTrace();
@@ -257,7 +257,7 @@ tinytac_initialize(
 
    assert(ttp != NULL);
 
-   if ((tt = tinytac_obj_alloc(sizeof(TinyTac), (void(*)(void*))&tinytac_tiytac_free)) == NULL)
+   if ((tt = tinytac_obj_alloc(sizeof(TinyTac), (void(*)(void*))&tinytac_tinytac_free)) == NULL)
       return(TTAC_ENOMEM);
 
    // adjust options
@@ -269,12 +269,12 @@ tinytac_initialize(
 
    if ((rc = tinytac_set_option(tt, TTAC_OPT_HOSTS, hosts)) != TTAC_SUCCESS)
    {
-      tinytac_tiytac_free(tt);
+      tinytac_tinytac_free(tt);
       return(rc);
    };
    if ((rc = tinytac_set_option(tt, TTAC_OPT_KEY, key)) != TTAC_SUCCESS)
    {
-      tinytac_tiytac_free(tt);
+      tinytac_tinytac_free(tt);
       return(rc);
    };
 
