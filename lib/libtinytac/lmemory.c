@@ -51,6 +51,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <errno.h>
 #include <assert.h>
 
 
@@ -124,7 +125,7 @@ tinytac_verify_is_obj(
 #pragma mark - Variables
 
 const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
-char                    tinytac_dflt_hosts_buff[128];
+char *                  tinytac_dflt_hosts_buff = NULL;
 unsigned                tinytac_dflt_opts       = TTAC_DFLT_OPTS;
 unsigned                tinytac_dflt_opts_neg   = TTAC_DFLT_OPTS_NEG;
 char **                 tinytac_dflt_keys       = NULL;
@@ -418,23 +419,112 @@ tinytac_set_option_host(
          TinyTac *                     tt,
          const char *                  invalue )
 {
-   char *      ostr;
+   int                     rc;
+   char *                  buff;
+   char *                  ostr;
+   const char *            dflt;
+   size_t                  size;
+   char *                  eol;
+   char *                  str;
+   void *                  ptr;
+   size_t                  budps_len;
+   BindleURLDesc **        budps;
 
    TinyTacDebugTrace();
 
-   if ((tt))
+   dflt      = ((tt))      ? tinytac_dflt_hosts : TTAC_DFLT_HOSTS;
+   invalue   = ((invalue)) ? invalue            : dflt;
+   size      = 0;
+   budps     = NULL;
+   budps_len = 0;
+
+   if ((buff = tinytacb_strdup(invalue)) == NULL)
+      return(TTAC_ENOMEM);
+
+   str = buff;
+   while( ((str)) && ((str[0])) )
    {
-      invalue = ((invalue)) ? invalue : TTAC_DFLT_HOSTS;
-      tinytacb_strlcpy(tinytac_dflt_hosts_buff, invalue, sizeof(tinytac_dflt_hosts_buff));
-      tinytac_dflt_hosts = tinytac_dflt_hosts_buff;
-      return(TTAC_SUCCESS);
+      // find next whitespace
+      eol = strchr(str, ' ');
+      eol = ((eol)) ? eol : strchr(str, '\t');
+      if ((eol))
+         eol[0] = '\0';
+
+      // skip empty host
+      if (str[0] == '\0')
+      {
+         str = ((eol)) ? &eol[1] : NULL;
+         continue;
+      };
+
+      // increase size of URL list
+      if ((ptr = realloc(budps, sizeof(BindleURLDesc *)*(budps_len+2))) == NULL)
+      {
+         free(buff);
+         tinytac_tinytac_free_budps(budps);
+         return(TTAC_ENOMEM);
+      };
+      budps[budps_len+0] = NULL;
+      budps[budps_len+1] = NULL;
+
+      // parse URL
+      if ((rc = tinytacb_urldesc_parse(str, &budps[budps_len])) != 0)
+      {
+         free(buff);
+         tinytac_tinytac_free_budps(budps);
+         return((rc = ENOMEM) ? TTAC_ENOMEM : TTAC_EINVAL);
+      };
+
+      // check URL result
+      if ( ((budps[budps_len]->bud_scheme)) && (!(strcasecmp("tacacs+", budps[budps_len]->bud_scheme))) )
+      {
+         free(buff);
+         tinytac_tinytac_free_budps(budps);
+         return(TTAC_EINVAL);
+      };
+      if ( ((budps[budps_len]->bud_userinfo)) || ((budps[budps_len]->bud_path)) ||
+           ((budps[budps_len]->bud_query)) || ((budps[budps_len]->bud_fragment)) )
+      {
+         free(buff);
+         tinytac_tinytac_free_budps(budps);
+         return(TTAC_EINVAL);
+      };
+
+      // resolve URL host
+      if ((rc = tinytacb_urldesc_resolve(budps[budps_len], AF_UNSPEC, TTAC_DFLT_PORT)) != 0)
+      {
+         free(buff);
+         tinytac_tinytac_free_budps(budps);
+         return((rc = ENOMEM) ? TTAC_ENOMEM : TTAC_EINVAL);
+      };
+
+      // shift string
+      str = ((eol)) ? &eol[1] : NULL;
    };
 
-   invalue = ((invalue)) ? invalue : tinytac_dflt_hosts;
+   free(buff);
+
+   // saves host string
    if ((ostr = tinytacb_strdup(invalue)) == NULL)
+   {
+      tinytac_tinytac_free_budps(budps);
       return(TTAC_ENOMEM);
-   free(tt->hosts);
-   tt->hosts = ostr;
+   };
+   if (!(tt))
+   {
+      tinytac_tinytac_free_budps(budps);
+      if ((tinytac_dflt_hosts_buff))
+         free(tinytac_dflt_hosts_buff);
+      tinytac_dflt_hosts_buff = ostr;
+      tinytac_dflt_hosts      = tinytac_dflt_hosts_buff;
+   } else
+   {
+      tinytac_tinytac_free_budps(tt->budps);
+      tt->budps = budps;
+      if ((tt->hosts))
+         free(tt->hosts);
+      tt->hosts = ostr;
+   };
 
    return(TTAC_SUCCESS);
 }
