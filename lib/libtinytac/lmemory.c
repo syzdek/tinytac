@@ -136,7 +136,6 @@ TinyTac tinytac_dflt =
 
 const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
 char *                  tinytac_dflt_hosts_buff = NULL;
-char **                 tinytac_dflt_keys       = NULL;
 
 
 /////////////////
@@ -563,7 +562,7 @@ tinytac_set_option_keys(
    TinyTacDebugTrace();
 
    strs     = NULL;
-   strsp    = ((tt)) ? &tt->keys : &tinytac_dflt_keys;
+   strsp    = ((tt)) ? &tt->keys : &tinytac_dflt.keys;
 
    if ((invalue))
    {
@@ -577,8 +576,8 @@ tinytac_set_option_keys(
    }
    else if ((tt))
    {
-      if ((tinytac_dflt_keys))
-         if (tinytacb_strsdup(&strs, tinytac_dflt_keys) != 0)
+      if ((tinytac_dflt.keys))
+         if (tinytacb_strsdup(&strs, tinytac_dflt.keys) != 0)
             return(TTAC_ENOMEM);
    };
 

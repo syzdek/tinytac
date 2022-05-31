@@ -65,7 +65,6 @@
 extern TinyTac          tinytac_dflt;
 extern const char *     tinytac_dflt_hosts;
 extern char *           tinytac_dflt_hosts_buff;
-extern char **          tinytac_dflt_keys;
 
 
 //////////////////
