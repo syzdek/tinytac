@@ -85,6 +85,7 @@ tinytac_error_map(
       case TTAC_EINVAL:       return("invalid argument");
       case TTAC_EOPTION:      return("invalid or unknown option");
       case TTAC_EOPTVAL:      return("invalid option value");
+      case TTAC_ESTOPINIT:    return("stop configuration initialization (used internally)");
       default:
       break;
    };

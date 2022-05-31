@@ -110,6 +110,7 @@
 #define TTAC_EINVAL                 0x0008 ///< invalid argument
 #define TTAC_EOPTION                0x0009 ///< invalid or unknown option
 #define TTAC_EOPTVAL                0x000a ///< invalid option value
+#define TTAC_ESTOPINIT              0x000b ///< stop configuration initialization (used internally)
 
 
 // library user options
