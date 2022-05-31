@@ -79,16 +79,6 @@
 //--------------------//
 #pragma mark TinyTac prototypes
 
-extern void
-tinytac_tinytac_free(
-         TinyTac *                     tt );
-
-
-static void
-tinytac_tinytac_free_budps(
-         BindleURLDesc **              budps );
-
-
 static int
 tinytac_set_option_flag(
          TinyTac *                     tt,
@@ -107,6 +97,16 @@ tinytac_set_option_keys(
          TinyTac *                     tt,
          const char *                  invalue,
          char * const *                invalues );
+
+
+extern void
+tinytac_tinytac_free(
+         TinyTac *                     tt );
+
+
+static void
+tinytac_tinytac_free_budps(
+         BindleURLDesc **              budps );
 
 
 //-------------------//
@@ -153,42 +153,6 @@ const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
 // TinyTac functions //
 //-------------------//
 #pragma mark TinyTac functions
-
-void
-tinytac_tinytac_free(
-         TinyTac *                     tt )
-{
-   TinyTacDebugTrace();
-
-   assert(tt != NULL);
-
-   if ((tt->hosts))
-      free(tt->hosts);
-   if ((tt->keys))
-      tinytacb_strsfree(tt->keys);
-
-   tinytac_tinytac_free_budps(tt->budps);
-
-   memset(tt, 0, sizeof(TinyTac));
-   free(tt);
-
-   return;
-}
-
-
-void
-tinytac_tinytac_free_budps(
-         BindleURLDesc **              budps )
-{
-   size_t pos;
-   if (!(budps))
-      return;
-   for(pos = 0; ((budps[pos])); pos++)
-      tinytacb_urldesc_free(budps[pos]);
-   free(budps);
-   return;
-}
-
 
 int
 tinytac_get_option(
@@ -650,6 +614,42 @@ tinytac_set_option_keys(
    *strsp = strs;
 
    return(TTAC_SUCCESS);
+}
+
+
+void
+tinytac_tinytac_free(
+         TinyTac *                     tt )
+{
+   TinyTacDebugTrace();
+
+   assert(tt != NULL);
+
+   if ((tt->hosts))
+      free(tt->hosts);
+   if ((tt->keys))
+      tinytacb_strsfree(tt->keys);
+
+   tinytac_tinytac_free_budps(tt->budps);
+
+   memset(tt, 0, sizeof(TinyTac));
+   free(tt);
+
+   return;
+}
+
+
+void
+tinytac_tinytac_free_budps(
+         BindleURLDesc **              budps )
+{
+   size_t pos;
+   if (!(budps))
+      return;
+   for(pos = 0; ((budps[pos])); pos++)
+      tinytacb_urldesc_free(budps[pos]);
+   free(budps);
+   return;
 }
 
 
