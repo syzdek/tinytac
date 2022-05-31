@@ -54,6 +54,8 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "lconf.h"
+
 
 ///////////////////
 //               //
@@ -194,12 +196,16 @@ tinytac_get_option(
          int                           option,
          void *                        outvalue )
 {
+   int            rc;
    const char *   str;
    unsigned *     optsp;
 
    TinyTacDebugTrace();
 
    assert(outvalue != NULL);
+
+   if ((rc = tinytac_conf(0)) != TTAC_SUCCESS)
+      return(rc);
 
    // get global options
    switch(option)
@@ -301,6 +307,9 @@ tinytac_initialize(
 
    assert(ttp != NULL);
 
+   if ((rc = tinytac_conf(0)) != TTAC_SUCCESS)
+      return(rc);
+
    if ((tt = tinytac_obj_alloc(sizeof(TinyTac), (void(*)(void*))&tinytac_tinytac_free)) == NULL)
       return(TTAC_ENOMEM);
 
@@ -334,6 +343,7 @@ tinytac_set_option(
          int                           option,
          const void *                  invalue )
 {
+   int            rc;
    int            ival;
    int            idflt;
    const char *   istr;
@@ -342,6 +352,9 @@ tinytac_set_option(
    TinyTacDebugTrace();
 
    assert(invalue != NULL);
+
+   if ((rc = tinytac_conf(0)) != TTAC_SUCCESS)
+      return(rc);
 
    switch(option)
    {

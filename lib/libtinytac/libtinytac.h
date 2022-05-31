@@ -93,6 +93,13 @@
 #define TTAC_MAGIC                  ((const uint8_t *)"\0TnyTac\0")
 
 
+#define TTAC_LINE_MAX_LEN           256
+
+
+// internal library get/set options
+#define TTAC_OPT_STOPINIT           10000
+
+
 //////////////////
 //              //
 //  Data Types  //

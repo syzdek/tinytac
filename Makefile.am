@@ -166,6 +166,8 @@ lib_libtinytac_a_SOURCES		= $(lib_libbindle_a_SOURCES) \
 					  include/tinytac_plus.h \
 					  include/tinytac_compat.h \
 					  lib/libtinytac/libtinytac.h \
+					  lib/libtinytac/lconf.c \
+					  lib/libtinytac/lconf.h \
 					  lib/libtinytac/ldebug.c \
 					  lib/libtinytac/ldebug.h \
 					  lib/libtinytac/lerror.c \
