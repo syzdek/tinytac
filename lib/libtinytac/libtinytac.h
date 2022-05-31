@@ -49,6 +49,7 @@
 #include <stdint.h>
 #include <stdatomic.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include <stdarg.h>
 
 #include <tinytac.h>
@@ -113,6 +114,7 @@ struct _tinytac
    char *                  hosts;
    BindleURLDesc **        budps;
    char **                 keys;
+   struct timeval          net_timeout;
    int                     padint;
    int                     timeout;
    unsigned                opts;

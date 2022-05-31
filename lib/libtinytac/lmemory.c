@@ -132,6 +132,8 @@ TinyTac tinytac_dflt =
    .opts       = TTAC_DFLT_OPTS,
    .opts_neg   = TTAC_DFLT_OPTS_NEG,
    .timeout    = TTAC_DFLT_TIMEOUT,
+   .net_timeout.tv_sec     = TTAC_DFLT_NET_TIMEOUT_SEC,
+   .net_timeout.tv_usec    = TTAC_DFLT_NET_TIMEOUT_USEC,
 };
 
 
@@ -322,6 +324,7 @@ tinytac_set_option(
    int            ival;
    int            idflt;
    const char *   istr;
+   struct timeval tv;
 
    TinyTacDebugTrace();
 
@@ -387,6 +390,17 @@ tinytac_set_option(
       case TTAC_OPT_KEYS:
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEYS, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       return(tinytac_set_option_keys(tt, NULL, invalue));
+
+      case TTAC_OPT_NETWORK_TIMEOUT:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_NETWORK_TIMEOUT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      tv.tv_sec  = ((tt))      ? tinytac_dflt.net_timeout.tv_sec            : TTAC_DFLT_NET_TIMEOUT_SEC;
+      tv.tv_sec  = ((invalue)) ? ((const struct timeval *)invalue)->tv_sec  : tv.tv_sec;
+      tv.tv_usec = ((tt))      ? tinytac_dflt.net_timeout.tv_usec           : TTAC_DFLT_NET_TIMEOUT_USEC;
+      tv.tv_usec = ((invalue)) ? ((const struct timeval *)invalue)->tv_usec : tv.tv_usec;
+      tt         = ((tt))      ? tt                                         : &tinytac_dflt;
+      tt->net_timeout.tv_sec   = tv.tv_sec;
+      tt->net_timeout.tv_usec  = tv.tv_usec;
+      return(TTAC_SUCCESS);
 
       case TTAC_OPT_NOINIT:
       TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_NOINIT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
