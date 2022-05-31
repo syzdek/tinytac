@@ -135,7 +135,6 @@ TinyTac tinytac_dflt =
 
 
 const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
-char *                  tinytac_dflt_hosts_buff = NULL;
 
 
 /////////////////
@@ -533,10 +532,10 @@ tinytac_set_option_host(
    if (!(tt))
    {
       tinytac_tinytac_free_budps(budps);
-      if ((tinytac_dflt_hosts_buff))
-         free(tinytac_dflt_hosts_buff);
-      tinytac_dflt_hosts_buff = ostr;
-      tinytac_dflt_hosts      = tinytac_dflt_hosts_buff;
+      if ((tinytac_dflt.hosts))
+         free(tinytac_dflt.hosts);
+      tinytac_dflt.hosts = ostr;
+      tinytac_dflt_hosts      = tinytac_dflt.hosts;
    } else
    {
       tinytac_tinytac_free_budps(tt->budps);
