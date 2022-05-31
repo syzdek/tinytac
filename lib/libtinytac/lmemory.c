@@ -62,7 +62,7 @@
 ///////////////////
 #pragma mark - Definitions
 
-#define TRAD_SOCKET_BIND_ADDRESSES_LEN (INET6_ADDRSTRLEN+INET6_ADDRSTRLEN+2)
+#define TTAC_SOCKET_BIND_ADDRESSES_LEN (INET6_ADDRSTRLEN+INET6_ADDRSTRLEN+2)
 
 
 //////////////////
