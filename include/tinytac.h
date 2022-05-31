@@ -138,6 +138,7 @@
 #define TTAC_OPT_NOINIT             5
 #define TTAC_OPT_IPV4               6
 #define TTAC_OPT_IPV6               7
+#define TTAC_OPT_TIMEOUT            8
 #define TTAC_OPT_HOSTS              10
 #define TTAC_OPT_KEY                11
 #define TTAC_OPT_KEYS               12
@@ -167,6 +168,7 @@
 #define TTAC_DFLT_OPTS                    0
 #define TTAC_DFLT_OPTS_NEG                0
 #define TTAC_DFLT_PORT                    49
+#define TTAC_DFLT_TIMEOUT                 10
 
 
 //////////////////

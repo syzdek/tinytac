@@ -130,7 +130,8 @@ TinyTac tinytac_dflt =
    .budps      = NULL,
    .keys       = NULL,
    .opts       = TTAC_DFLT_OPTS,
-   .opts_neg   = TTAC_DFLT_OPTS_NEG
+   .opts_neg   = TTAC_DFLT_OPTS_NEG,
+   .timeout    = TTAC_DFLT_TIMEOUT,
 };
 
 
@@ -319,6 +320,7 @@ tinytac_set_option(
          const void *                  invalue )
 {
    int            ival;
+   int            idflt;
    const char *   istr;
 
    TinyTacDebugTrace();
@@ -390,6 +392,14 @@ tinytac_set_option(
       TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_NOINIT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       ival = ((invalue)) ? *((const int *)invalue) : TTAC_YES;
       return(tinytac_set_option_flag(tt, TTAC_NOINIT, &ival));
+
+      case TTAC_OPT_TIMEOUT:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_TIMEOUT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      idflt = ((tt))      ? tinytac_dflt.timeout    : TTAC_DFLT_TIMEOUT;
+      ival  = ((invalue)) ? *((const int *)invalue) : idflt;
+      tt    = ((tt))      ? tt                      : &tinytac_dflt;
+      tt->timeout = ival;
+      return(TTAC_SUCCESS);
 
       default:
       break;

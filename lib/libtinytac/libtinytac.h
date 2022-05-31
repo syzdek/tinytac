@@ -113,6 +113,8 @@ struct _tinytac
    char *                  hosts;
    BindleURLDesc **        budps;
    char **                 keys;
+   int                     padint;
+   int                     timeout;
    unsigned                opts;
    unsigned                opts_neg;
 };
