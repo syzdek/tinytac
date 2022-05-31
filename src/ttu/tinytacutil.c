@@ -48,6 +48,8 @@
 #include <assert.h>
 #include <errno.h>
 
+#include <tinytac.h>
+
 
 ///////////////////
 //               //
@@ -117,6 +119,7 @@ main(
 int main(int argc, char * argv[])
 {
    int                           c;
+   int                           rc;
    int                           opt_index;
 
    // getopt options
@@ -129,6 +132,12 @@ int main(int argc, char * argv[])
       {"version",          no_argument,       NULL, 'V' },
       {"verbose",          no_argument,       NULL, 'v' },
       { NULL, 0, NULL, 0 }
+   };
+
+   if ((rc = tinytac_set_option(NULL, TTAC_OPT_DEBUG_IDENT, PROGRAM_NAME)) != TTAC_SUCCESS)
+   {
+      fprintf(stderr, "%s: tinytac_set_option(%s): %s\n", PROGRAM_NAME, "TTAC_OPT_DEBUG_IDENT", tinytac_strerror(rc));
+      return(1);
    };
 
    while((c = getopt_long(argc, argv, short_opt, long_opt, &opt_index)) != -1)
