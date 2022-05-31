@@ -136,6 +136,8 @@
 #define TTAC_OPT_DEBUG_IDENT        2
 #define TTAC_OPT_DEBUG_SYSLOG       3
 #define TTAC_OPT_NOINIT             5
+#define TTAC_OPT_IPV4               6
+#define TTAC_OPT_IPV6               7
 #define TTAC_OPT_HOSTS              10
 #define TTAC_OPT_KEY                11
 #define TTAC_OPT_KEYS               12

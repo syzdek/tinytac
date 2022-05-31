@@ -364,6 +364,14 @@ tinytac_set_option(
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_HOSTS, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       return(tinytac_set_option_host(tt, invalue));
 
+      case TTAC_OPT_IPV4:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_IPV4, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_IPV4, invalue));
+
+      case TTAC_OPT_IPV6:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_IPV6, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      return(tinytac_set_option_flag(tt, TTAC_IPV6, invalue));
+
       case TTAC_OPT_KEY:
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEY, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       return(tinytac_set_option_keys(tt, invalue, NULL));
