@@ -1152,7 +1152,6 @@ my_pckt_send(
          tacplus_pckt_t *              pckt )
 {
    size_t         pckt_len;
-   ssize_t        rc;
    const char *   str;
 
    my_pckt_hexdump(opts, pckt);
@@ -1169,7 +1168,7 @@ my_pckt_send(
    my_verbose(opts, "sending %s packet ...", str);
 
    pckt_len = ntohl(pckt->pckt_length) + sizeof(tacplus_pckt_t);
-   if ((rc = write(s, (void *)pckt, pckt_len)) == -1)
+   if (write(s, (void *)pckt, pckt_len) == -1)
    {
       my_error("write(): %s", strerror(errno));
       return(-1);
