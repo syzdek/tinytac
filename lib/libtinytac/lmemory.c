@@ -136,7 +136,6 @@ TinyTac tinytac_dflt =
 
 const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
 char *                  tinytac_dflt_hosts_buff = NULL;
-unsigned                tinytac_dflt_opts_neg   = TTAC_DFLT_OPTS_NEG;
 char **                 tinytac_dflt_keys       = NULL;
 
 
@@ -421,7 +420,7 @@ tinytac_set_option_flag(
    dflt        = ((tt))       ? (tinytac_dflt.opts & flag)  : (flag & TTAC_DFLT_OPTS);
    ival        = ((invalue))  ? *invalue                    : dflt;
    optsp       = ((tt))       ? &tt->opts                   : &tinytac_dflt.opts;
-   opts_negp   = ((tt))       ? &tt->opts_neg               : &tinytac_dflt_opts_neg;
+   opts_negp   = ((tt))       ? &tt->opts_neg               : &tinytac_dflt.opts_neg;
 
    if ((ival))
    {
