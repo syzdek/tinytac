@@ -372,6 +372,11 @@ tinytac_set_option(
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEYS, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       return(tinytac_set_option_keys(tt, NULL, invalue));
 
+      case TTAC_OPT_NOINIT:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_NOINIT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      ival = ((invalue)) ? *((const int *)invalue) : TTAC_YES;
+      return(tinytac_set_option_flag(tt, TTAC_NOINIT, &ival));
+
       default:
       break;
    };
