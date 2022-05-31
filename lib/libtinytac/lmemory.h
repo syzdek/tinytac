@@ -62,9 +62,9 @@
 /////////////////
 #pragma mark - Variables
 
+extern TinyTac          tinytac_dflt;
 extern const char *     tinytac_dflt_hosts;
 extern char *           tinytac_dflt_hosts_buff;
-extern unsigned         tinytac_dflt_opts;
 extern unsigned         tinytac_dflt_opts_neg;
 extern char **          tinytac_dflt_keys;
 
