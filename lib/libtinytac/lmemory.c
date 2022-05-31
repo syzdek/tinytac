@@ -266,6 +266,19 @@ tinytac_get_option(
          return(TTAC_ENOMEM);
       return(TTAC_SUCCESS);
 
+      case TTAC_OPT_RANDOM:
+      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_RANDOM, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      switch(*optsp & TTAC_RND_METHODS)
+      {
+         case TTAC_RND_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RND_RAND); break;
+         case TTAC_RND_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RND_RANDOM);  break;
+         case TTAC_RND_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RND_URANDOM); break;
+         default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %u", (*optsp & TTAC_RND_METHODS)); break;
+      };
+      *((int *)outvalue) = *optsp & TTAC_RND_METHODS;
+      return(TTAC_SUCCESS);
+
       default:
       break;
    };
@@ -406,6 +419,23 @@ tinytac_set_option(
       TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_NOINIT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       ival = ((invalue)) ? *((const int *)invalue) : TTAC_YES;
       return(tinytac_set_option_flag(tt, TTAC_NOINIT, &ival));
+
+      case TTAC_OPT_RANDOM:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_RANDOM, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      idflt = ((tt))      ? tinytac_dflt.opts       : TTAC_DFLT_RANDOM;
+      ival  = ((invalue)) ? *((const int *)invalue) : (idflt & TTAC_RND_METHODS);
+      switch(ival)
+      {  case TTAC_RND_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RND_RAND");    break;
+         case TTAC_RND_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RND_RANDOM");  break;
+         case TTAC_RND_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RND_URANDOM"); break;
+         default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %i", *((const int *)invalue)); return(TTAC_EOPTVAL);
+      };
+      tt = ((tt)) ? tt : &tinytac_dflt;
+      tt->opts     &= ~(TTAC_RND_METHODS);
+      tt->opts_neg &= ~(TTAC_RND_METHODS);
+      tt->opts     |= ival;
+      tt->opts_neg |= ~ival & TTAC_RND_METHODS;
+      return(TTAC_SUCCESS);
 
       case TTAC_OPT_TIMEOUT:
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_TIMEOUT, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
