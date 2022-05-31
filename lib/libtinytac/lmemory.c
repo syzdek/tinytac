@@ -126,12 +126,12 @@ tinytac_verify_is_obj(
 
 TinyTac tinytac_dflt =
 {
-   .hosts      = NULL,
-   .budps      = NULL,
-   .keys       = NULL,
-   .opts       = TTAC_DFLT_OPTS,
-   .opts_neg   = TTAC_DFLT_OPTS_NEG,
-   .timeout    = TTAC_DFLT_TIMEOUT,
+   .hosts                  = NULL,
+   .budps                  = NULL,
+   .keys                   = NULL,
+   .opts                   = TTAC_DFLT_OPTS,
+   .opts_neg               = TTAC_DFLT_OPTS_NEG,
+   .timeout                = TTAC_DFLT_TIMEOUT,
    .net_timeout.tv_sec     = TTAC_DFLT_NET_TIMEOUT_SEC,
    .net_timeout.tv_usec    = TTAC_DFLT_NET_TIMEOUT_USEC,
 };
