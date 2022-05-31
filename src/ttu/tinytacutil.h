@@ -40,21 +40,6 @@
 
 #include <tinytac_compat.h>
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/uio.h>
-#include <unistd.h>
-#include <assert.h>
-#include <fcntl.h>
-#include <errno.h>
-
 
 ///////////////////
 //               //
