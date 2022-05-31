@@ -442,7 +442,6 @@ tinytac_set_option_host(
    char *                  buff;
    char *                  ostr;
    const char *            dflt;
-   size_t                  size;
    char *                  eol;
    char *                  str;
    void *                  ptr;
@@ -453,7 +452,6 @@ tinytac_set_option_host(
 
    dflt      = ((tt))      ? tinytac_dflt_hosts : TTAC_DFLT_HOSTS;
    invalue   = ((invalue)) ? invalue            : dflt;
-   size      = 0;
    budps     = NULL;
    budps_len = 0;
 
@@ -483,6 +481,7 @@ tinytac_set_option_host(
          tinytac_tinytac_free_budps(budps);
          return(TTAC_ENOMEM);
       };
+      budps              = ptr;
       budps[budps_len+0] = NULL;
       budps[budps_len+1] = NULL;
 
@@ -491,7 +490,7 @@ tinytac_set_option_host(
       {
          free(buff);
          tinytac_tinytac_free_budps(budps);
-         return((rc = ENOMEM) ? TTAC_ENOMEM : TTAC_EINVAL);
+         return((rc == ENOMEM) ? TTAC_ENOMEM : TTAC_EINVAL);
       };
 
       // check URL result
@@ -514,7 +513,7 @@ tinytac_set_option_host(
       {
          free(buff);
          tinytac_tinytac_free_budps(budps);
-         return((rc = ENOMEM) ? TTAC_ENOMEM : TTAC_EINVAL);
+         return((rc == ENOMEM) ? TTAC_ENOMEM : TTAC_EINVAL);
       };
 
       // shift string
