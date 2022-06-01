@@ -186,6 +186,8 @@ tinytac_get_option(
    int            rc;
    const char *   str;
    unsigned *     optsp;
+   void *         ptr;
+   size_t         pos;
 
    TinyTacDebugTrace();
 
@@ -260,6 +262,55 @@ tinytac_get_option(
          return(TTAC_ENOMEM);
       return(TTAC_SUCCESS);
 
+      case TTAC_OPT_IPV4:
+      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_IPV4, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_OPT_IPV4)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((*optsp & TTAC_OPT_IPV4)) ? TTAC_YES : TTAC_NO;
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_IPV6:
+      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_IPV6, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_OPT_IPV6)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((*optsp & TTAC_OPT_IPV6)) ? TTAC_YES : TTAC_NO;
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_KEY:
+      tt = ((tt)) ? tt : &tinytac_dflt;
+      *((char **)outvalue) = NULL;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEY, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      if (!(tt->keys))
+         return(TTAC_SUCCESS);
+      if (!(tt->keys[0]))
+         return(TTAC_SUCCESS);
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", tt->keys[0]);
+      if ((*((char **)outvalue) = tinytacb_strdup(tt->keys[0])) == NULL)
+         return(TTAC_ENOMEM);
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_KEYS:
+      tt = ((tt)) ? tt : &tinytac_dflt;
+      *((char **)outvalue) = NULL;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_KEY, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      if (!(tt->keys))
+         return(TTAC_SUCCESS);
+      for(pos = 0; ((tt->keys[pos])); pos++)
+         TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", tt->keys[pos]);
+      if ((tinytacb_strsdup((char ***)outvalue, tt->keys)))
+         return(TTAC_ENOMEM);
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_NETWORK_TIMEOUT:
+      tt = ((tt)) ? tt : &tinytac_dflt;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_NETWORK_TIMEOUT, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %u sec %u usec", tt->net_timeout.tv_sec, tt->net_timeout.tv_usec);
+      if ((ptr = malloc(sizeof(struct timeval))) == NULL)
+         return(TTAC_ENOMEM);
+      memcpy(ptr, &tt->net_timeout, sizeof(struct timeval));
+      *((struct timeval **)outvalue) = ptr;
+      return(TTAC_SUCCESS);
+
       case TTAC_OPT_RANDOM:
       optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_RANDOM, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
@@ -271,6 +322,13 @@ tinytac_get_option(
          default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %u", (*optsp & TTAC_RND_METHODS)); break;
       };
       *((int *)outvalue) = *optsp & TTAC_RND_METHODS;
+      return(TTAC_SUCCESS);
+
+      case TTAC_OPT_TIMEOUT:
+      tt = ((tt)) ? tt : &tinytac_dflt;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_TIMEOUT, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %i", tt->timeout);
+      *((int *)outvalue) = tt->timeout;
       return(TTAC_SUCCESS);
 
       default:
@@ -308,16 +366,25 @@ tinytac_initialize(
       return(rc);
    };
 
-   // clear default options if overriden by user
+   // sets user flags and default flags
    if ((opts & TTAC_IP_UNSPEC))
       tt->opts &= ~TTAC_IP_UNSPEC;
    if ((opts & TTAC_AUTHEN_TYPES))
       tt->opts &= ~TTAC_AUTHEN_TYPES;
    if ((opts & TTAC_RND_METHODS))
       tt->opts &= ~TTAC_RND_METHODS;
+   tt->opts |= opts;
+   if (!(tt->opts & TTAC_IP_UNSPEC))
+      if (!(tt->opts |= TTAC_IP_UNSPEC & tinytac_dflt.opts))
+         tt->opts |= TTAC_DFLT_IP & ~tinytac_dflt.opts_neg;
+   if (!(tt->opts & TTAC_AUTHEN_TYPES))
+      if (!(tt->opts |= TTAC_AUTHEN_TYPES & tinytac_dflt.opts))
+         tt->opts |= TTAC_DFLT_AUTHEN & ~tinytac_dflt.opts_neg;
+   if (!(tt->opts & TTAC_RND_METHODS))
+      if (!(tt->opts |= TTAC_RND_METHODS & tinytac_dflt.opts))
+         tt->opts |= TTAC_DFLT_RANDOM;
 
    // apply user options
-   tt->opts |= opts;
    if ((rc = tinytac_set_option(tt, TTAC_OPT_HOSTS, hosts)) != TTAC_SUCCESS)
    {
       tinytac_tinytac_free(tt);
@@ -438,7 +505,7 @@ tinytac_set_option(
       {  case TTAC_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RAND");    break;
          case TTAC_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RANDOM");  break;
          case TTAC_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_URANDOM"); break;
-         default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %i", *((const int *)invalue)); return(TTAC_EOPTVAL);
+         default:           TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %i", ival); return(TTAC_EOPTVAL);
       };
       tt = ((tt)) ? tt : &tinytac_dflt;
       tt->opts     &= ~(TTAC_RND_METHODS);
