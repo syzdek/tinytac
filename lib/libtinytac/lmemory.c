@@ -185,7 +185,7 @@ tinytac_get_option(
 {
    int            rc;
    const char *   str;
-   unsigned *     optsp;
+   unsigned       opts;
    void *         ptr;
    size_t         pos;
 
@@ -201,38 +201,33 @@ tinytac_get_option(
    switch(option)
    {
       case TTAC_OPT_AUTHEN_ASCII:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_ASCII, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_ASCII)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_ASCII)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_ASCII)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_ASCII)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_AUTHEN_CHAP:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_CHAP, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_CHAP)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_CHAP)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_CHAP)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_CHAP)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_AUTHEN_MSCHAP:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_MSCHAP, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_MSCHAP)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_MSCHAP)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_MSCHAP)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_MSCHAP)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_AUTHEN_MSCHAPV2:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_MSCHAPV2, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_MSCHAPV2)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_MSCHAPV2)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_MSCHAPV2)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_MSCHAPV2)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_AUTHEN_PAP:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_PAP, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_PAP)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_PAP)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_PAP)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_PAP)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_DEBUG_IDENT:
@@ -263,17 +258,15 @@ tinytac_get_option(
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_IPV4:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_IPV4, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_OPT_IPV4)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_OPT_IPV4)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_OPT_IPV4)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_IPV4)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_IPV6:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_IPV6, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((*optsp & TTAC_OPT_IPV6)) ? "TTAC_YES" : "TTAC_NO");
-      *((int *)outvalue) = ((*optsp & TTAC_OPT_IPV6)) ? TTAC_YES : TTAC_NO;
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_OPT_IPV6)) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_IPV6)) ? TTAC_YES : TTAC_NO;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_KEY:
@@ -312,16 +305,15 @@ tinytac_get_option(
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_RANDOM:
-      optsp = ((tt)) ? &tt->opts : &tinytac_dflt.opts;
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_RANDOM, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
-      switch(*optsp & TTAC_RND_METHODS)
+      switch(opts & TTAC_RND_METHODS)
       {
          case TTAC_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RAND); break;
          case TTAC_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RANDOM);  break;
          case TTAC_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_URANDOM); break;
-         default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %u", (*optsp & TTAC_RND_METHODS)); break;
+         default:           TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %u", (opts & TTAC_RND_METHODS)); break;
       };
-      *((int *)outvalue) = *optsp & TTAC_RND_METHODS;
+      *((int *)outvalue) = opts & TTAC_RND_METHODS;
       return(TTAC_SUCCESS);
 
       case TTAC_OPT_TIMEOUT:
