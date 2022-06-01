@@ -538,18 +538,18 @@ tinytac_set_option_flag(
    if (!(flag))
       return(TTAC_SUCCESS);
 
-   dflt        = ((tt))       ? (tinytac_dflt.opts & flag)  : (flag & TTAC_DFLT_OPTS);
-   ival        = ((invalue))  ? *invalue                    : dflt;
    optsp       = ((tt))       ? &tt->opts                   : &tinytac_dflt.opts;
    opts_negp   = ((tt))       ? &tt->opts_neg               : &tinytac_dflt.opts_neg;
+   dflt        = ((tt))       ? (flag & tinytac_dflt.opts)  : (flag & TTAC_DFLT_OPTS);
+   ival        = ((invalue))  ? *invalue                    : dflt;
 
    if ((ival))
    {
-      *optsp      |= flag;
-      *opts_negp  ^= flag;
+      *optsp      |=  flag;
+      *opts_negp  &= ~flag;
    } else {
-      *optsp      ^= flag;
-      *opts_negp  |= flag;
+      *optsp      &= ~flag;
+      *opts_negp  |=  flag;
    };
 
    return(TTAC_SUCCESS);
