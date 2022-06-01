@@ -349,8 +349,6 @@ tinytac_set_option(
 
    TinyTacDebugTrace();
 
-   assert(invalue != NULL);
-
    if (option != TTAC_OPT_NOINIT)
       if ((rc = tinytac_conf(((tt)) ? tt->opts : 0)) != TTAC_SUCCESS)
          return(rc);
