@@ -118,9 +118,9 @@
 #define TTAC_IPV4                   0x00000002U
 #define TTAC_IPV6                   0x00000004U
 //                                  0x00000008U  UNUSED
-#define TTAC_RND_RAND               0x00000010U  ///< use rand()
-#define TTAC_RND_RANDOM             0x00000020U  ///< use random()
-#define TTAC_RND_URANDOM            0x00000040U  ///< use /dev/urandom
+#define TTAC_RAND                   0x00000010U  ///< use rand()
+#define TTAC_RANDOM                 0x00000020U  ///< use random()
+#define TTAC_URANDOM                0x00000040U  ///< use /dev/urandom
 #define TTAC_SERVER                 0x00000080U
 #define TTAC_ASCII                  0x00000100U  ///< allow ASCII authentication
 #define TTAC_PAP                    0x00000200U  ///< allow PAP authentication
@@ -129,7 +129,7 @@
 #define TTAC_MSCHAPV2               0x00001000U  ///< allow MSCHAPv2 authentication
 #define TTAC_AUTHEN_TYPES           (TTAC_ASCII | TTAC_PAP | TTAC_CHAP | TTAC_MSCHAP | TTAC_MSCHAPV2 )
 #define TTAC_IP_UNSPEC              (TTAC_IPV4 | TTAC_IPV6)
-#define TTAC_RND_METHODS            (TTAC_RND_RAND | TTAC_RND_RANDOM | TTAC_RND_URANDOM)
+#define TTAC_RND_METHODS            (TTAC_RAND | TTAC_RANDOM | TTAC_URANDOM)
 
 
 #define TTAC_NO                     0
@@ -172,13 +172,13 @@
 #define TTAC_DFLT_DEBUG_SYSLOG            TTAC_NO
 #define TTAC_DFLT_HOSTS                   "localhost"
 #define TTAC_DFLT_SECRETS                 NULL
-#define TTAC_DFLT_OPTS                    ( TTAC_RND_URANDOM | TTAC_IP_UNSPEC | TTAC_AUTHEN_TYPES )
+#define TTAC_DFLT_OPTS                    ( TTAC_URANDOM | TTAC_IP_UNSPEC | TTAC_AUTHEN_TYPES )
 #define TTAC_DFLT_OPTS_NEG                0
 #define TTAC_DFLT_PORT                    49
 #define TTAC_DFLT_TIMEOUT                 10
 #define TTAC_DFLT_NET_TIMEOUT_SEC         10
 #define TTAC_DFLT_NET_TIMEOUT_USEC        0
-#define TTAC_DFLT_RANDOM                  TTAC_RND_URANDOM
+#define TTAC_DFLT_RANDOM                  TTAC_URANDOM
 
 
 //////////////////

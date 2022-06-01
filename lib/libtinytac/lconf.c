@@ -396,9 +396,9 @@ tinytac_conf_opt(
 
       case TTAC_OPT_RANDOM:
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( tr, TTAC_OPT_RANDOM, \"%s\" )", __func__, (((value)) ? value : "(null)"));
-      if      (!(strcasecmp(value, "rand")))    ival = TTAC_RND_RAND;
-      else if (!(strcasecmp(value, "random")))  ival = TTAC_RND_RANDOM;
-      else if (!(strcasecmp(value, "urandom"))) ival = TTAC_RND_URANDOM;
+      if      (!(strcasecmp(value, "rand")))    ival = TTAC_RAND;
+      else if (!(strcasecmp(value, "random")))  ival = TTAC_RANDOM;
+      else if (!(strcasecmp(value, "urandom"))) ival = TTAC_URANDOM;
       else return(TTAC_SUCCESS);
       return(tinytac_set_option(NULL, TTAC_OPT_RANDOM, &ival));
 

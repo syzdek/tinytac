@@ -265,9 +265,9 @@ tinytac_get_option(
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_RANDOM, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
       switch(*optsp & TTAC_RND_METHODS)
       {
-         case TTAC_RND_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RND_RAND); break;
-         case TTAC_RND_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RND_RANDOM);  break;
-         case TTAC_RND_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RND_URANDOM); break;
+         case TTAC_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RAND); break;
+         case TTAC_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_RANDOM);  break;
+         case TTAC_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", TTAC_URANDOM); break;
          default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %u", (*optsp & TTAC_RND_METHODS)); break;
       };
       *((int *)outvalue) = *optsp & TTAC_RND_METHODS;
@@ -437,9 +437,9 @@ tinytac_set_option(
       idflt = ((tt))      ? tinytac_dflt.opts       : TTAC_DFLT_RANDOM;
       ival  = ((invalue)) ? *((const int *)invalue) : (idflt & TTAC_RND_METHODS);
       switch(ival)
-      {  case TTAC_RND_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RND_RAND");    break;
-         case TTAC_RND_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RND_RANDOM");  break;
-         case TTAC_RND_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RND_URANDOM"); break;
+      {  case TTAC_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RAND");    break;
+         case TTAC_RANDOM:  TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RANDOM");  break;
+         case TTAC_URANDOM: TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_URANDOM"); break;
          default:               TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %i", *((const int *)invalue)); return(TTAC_EOPTVAL);
       };
       tt = ((tt)) ? tt : &tinytac_dflt;
