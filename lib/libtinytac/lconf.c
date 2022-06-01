@@ -150,6 +150,7 @@ int
 tinytac_conf(
          unsigned                      opts )
 {
+   int               rc;
    const char *      tintacrc;
    const char *      tinytacconf;
    char              buff[4096];
@@ -173,6 +174,10 @@ tinytac_conf(
    // system information
    getpwuid_r(getuid(), &pwd, buff, sizeof(buff), &pwres);
    home = (((pwres)) ? pwres->pw_dir : "/");
+
+   // load defaults
+   if ((rc = tinytac_defaults(NULL)) != TTAC_SUCCESS)
+      return(rc);
 
    // process "/usr/local/etc/tinytac.conf"
    tinytac_conf_file(SYSCONFDIR "/tinytac.conf");

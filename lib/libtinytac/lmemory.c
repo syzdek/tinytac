@@ -155,6 +155,29 @@ const char *            tinytac_dflt_hosts      = TTAC_DFLT_HOSTS;
 #pragma mark TinyTac functions
 
 int
+tinytac_defaults(
+         TinyTac *                     tt )
+{
+   int rc;
+
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_AUTHEN_ASCII,     NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_AUTHEN_PAP,       NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_AUTHEN_CHAP,      NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_AUTHEN_MSCHAP,    NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_AUTHEN_MSCHAPV2,  NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_HOSTS,            NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_IPV4,             NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_IPV6,             NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_KEY,              NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_NETWORK_TIMEOUT,  NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_RANDOM,           NULL)) != TTAC_SUCCESS) return(rc);
+   if ((rc = tinytac_set_option(tt, TTAC_OPT_TIMEOUT,          NULL)) != TTAC_SUCCESS) return(rc);
+
+   return(TTAC_SUCCESS);
+}
+
+
+int
 tinytac_get_option(
          TinyTac *                     tt,
          int                           option,
@@ -168,8 +191,9 @@ tinytac_get_option(
 
    assert(outvalue != NULL);
 
-   if ((rc = tinytac_conf(0)) != TTAC_SUCCESS)
-      return(rc);
+   if (option != TTAC_OPT_NOINIT)
+      if ((rc = tinytac_conf(((tt)) ? tt->opts : 0)) != TTAC_SUCCESS)
+         return(rc);
 
    // get global options
    switch(option)
@@ -271,19 +295,29 @@ tinytac_initialize(
 
    assert(ttp != NULL);
 
-   if ((rc = tinytac_conf(0)) != TTAC_SUCCESS)
+   if ((rc = tinytac_conf(opts)) != TTAC_SUCCESS)
       return(rc);
 
    if ((tt = tinytac_obj_alloc(sizeof(TinyTac), (void(*)(void*))&tinytac_tinytac_free)) == NULL)
       return(TTAC_ENOMEM);
 
-   // adjust options
-   tt->opts = opts;
-   if (!(tt->opts & TTAC_IP_UNSPEC))
-      tt->opts |= TTAC_IP_UNSPEC;
-   if (!(tt->opts & TTAC_AUTHEN_TYPES))
-      tt->opts |= TTAC_AUTHEN_TYPES;
+   // apply default options
+   if ((rc = tinytac_defaults(tt)) != TTAC_SUCCESS)
+   {
+      tinytac_tinytac_free(tt);
+      return(rc);
+   };
 
+   // clear default options if overriden by user
+   if ((opts & TTAC_IP_UNSPEC))
+      tt->opts &= ~TTAC_IP_UNSPEC;
+   if ((opts & TTAC_AUTHEN_TYPES))
+      tt->opts &= ~TTAC_AUTHEN_TYPES;
+   if ((opts & TTAC_RND_METHODS))
+      tt->opts &= ~TTAC_RND_METHODS;
+
+   // apply user options
+   tt->opts |= opts;
    if ((rc = tinytac_set_option(tt, TTAC_OPT_HOSTS, hosts)) != TTAC_SUCCESS)
    {
       tinytac_tinytac_free(tt);
@@ -317,8 +351,9 @@ tinytac_set_option(
 
    assert(invalue != NULL);
 
-   if ((rc = tinytac_conf(0)) != TTAC_SUCCESS)
-      return(rc);
+   if (option != TTAC_OPT_NOINIT)
+      if ((rc = tinytac_conf(((tt)) ? tt->opts : 0)) != TTAC_SUCCESS)
+         return(rc);
 
    switch(option)
    {

@@ -73,6 +73,16 @@ extern const char *     tinytac_dflt_hosts;
 //////////////////
 #pragma mark - Prototypes
 
+//--------------------//
+// TinyTac prototypes //
+//--------------------//
+#pragma mark TinyTac prototypes
+
+int
+tinytac_defaults(
+         TinyTac *                     tt );
+
+
 //-------------------//
 // object prototypes //
 //-------------------//
