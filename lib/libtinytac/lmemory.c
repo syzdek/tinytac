@@ -197,6 +197,8 @@ tinytac_get_option(
       if ((rc = tinytac_conf(((tt)) ? tt->opts : 0)) != TTAC_SUCCESS)
          return(rc);
 
+   opts = ((tt)) ? tt->opts : tinytac_dflt.opts;
+
    // get global options
    switch(option)
    {
