@@ -339,6 +339,8 @@ ttu_file2str(
    str[sb.st_size] = '\0';
    close(fd);
 
+   tinytacb_strchomp(str, NULL);
+
    return(str);
 }
 
