@@ -64,6 +64,20 @@
 #endif
 
 
+//////////////////
+//              //
+//  Data Types  //
+//              //
+//////////////////
+#pragma mark - Data Types
+
+typedef struct _tinytac_opt
+{
+   const char *          opt_name;
+   uintptr_t             opt_id;
+} tinytac_opt_t;
+
+
 /////////////////
 //             //
 //  Variables  //
@@ -76,24 +90,24 @@ static atomic_int tinytac_conf_init;
 
 
 #pragma mark tinytac_conf_options[]
-static bindle_map_t tinytac_conf_options[] =
+static tinytac_opt_t tinytac_conf_options[] =
 {
-   { .map_name = "AUTHEN_ASCII",       .map_value = TTAC_OPT_AUTHEN_ASCII },
-   { .map_name = "AUTHEN_CHAP",        .map_value = TTAC_OPT_AUTHEN_CHAP },
-   { .map_name = "AUTHEN_MSCHAP",      .map_value = TTAC_OPT_AUTHEN_MSCHAP },
-   { .map_name = "AUTHEN_MSCHAPV2",    .map_value = TTAC_OPT_AUTHEN_MSCHAPV2 },
-   { .map_name = "AUTHEN_PAP",         .map_value = TTAC_OPT_AUTHEN_PAP },
-   { .map_name = "DEBUG_LEVEL",        .map_value = TTAC_OPT_DEBUG_LEVEL },
-   { .map_name = "DEBUG_SYSLOG",       .map_value = TTAC_OPT_DEBUG_SYSLOG },
-   { .map_name = "HOST",               .map_value = TTAC_OPT_HOSTS },
-   { .map_name = "IPV4",               .map_value = TTAC_OPT_IPV4 },
-   { .map_name = "IPV6",               .map_value = TTAC_OPT_IPV6 },
-   { .map_name = "KEY",                .map_value = TTAC_OPT_KEY },
-   { .map_name = "NETWORK_TIMEOUT",    .map_value = TTAC_OPT_NETWORK_TIMEOUT },
-   { .map_name = "RANDOM",             .map_value = TTAC_OPT_RANDOM },
-   { .map_name = "STOPINIT",           .map_value = TTAC_OPT_STOPINIT },
-   { .map_name = "TIMEOUT",            .map_value = TTAC_OPT_TIMEOUT },
-   { .map_name = NULL,                 .map_value = 0 }
+   { .opt_name = "AUTHEN_ASCII",       .opt_id = TTAC_OPT_AUTHEN_ASCII },
+   { .opt_name = "AUTHEN_CHAP",        .opt_id = TTAC_OPT_AUTHEN_CHAP },
+   { .opt_name = "AUTHEN_MSCHAP",      .opt_id = TTAC_OPT_AUTHEN_MSCHAP },
+   { .opt_name = "AUTHEN_MSCHAPV2",    .opt_id = TTAC_OPT_AUTHEN_MSCHAPV2 },
+   { .opt_name = "AUTHEN_PAP",         .opt_id = TTAC_OPT_AUTHEN_PAP },
+   { .opt_name = "DEBUG_LEVEL",        .opt_id = TTAC_OPT_DEBUG_LEVEL },
+   { .opt_name = "DEBUG_SYSLOG",       .opt_id = TTAC_OPT_DEBUG_SYSLOG },
+   { .opt_name = "HOST",               .opt_id = TTAC_OPT_HOSTS },
+   { .opt_name = "IPV4",               .opt_id = TTAC_OPT_IPV4 },
+   { .opt_name = "IPV6",               .opt_id = TTAC_OPT_IPV6 },
+   { .opt_name = "KEY",                .opt_id = TTAC_OPT_KEY },
+   { .opt_name = "NETWORK_TIMEOUT",    .opt_id = TTAC_OPT_NETWORK_TIMEOUT },
+   { .opt_name = "RANDOM",             .opt_id = TTAC_OPT_RANDOM },
+   { .opt_name = "STOPINIT",           .opt_id = TTAC_OPT_STOPINIT },
+   { .opt_name = "TIMEOUT",            .opt_id = TTAC_OPT_TIMEOUT },
+   { .opt_name = NULL,                 .opt_id = 0 }
 };
 
 
@@ -116,26 +130,31 @@ tinytac_conf_file(
 
 static int
 tinytac_conf_opt(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value );
 
 
 static int
 tinytac_conf_opt_flag(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value );
 
 
 static int
 tinytac_conf_opt_int(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value );
 
 
 static int
 tinytac_conf_opt_timeval(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value );
+
+
+static tinytac_opt_t *
+tinytac_opt_lookup_name(
+         const char *                  name );
 
 
 /////////////////
@@ -243,17 +262,17 @@ tinytac_conf_environment(
    size_t                  pos;
    char *                  value;
    char                    varname[64];
-   bindle_map_t *          opt;
+   tinytac_opt_t *         opt;
 
    TinyTacDebugTrace();
 
-   for(pos = 0; ((tinytac_conf_options[pos].map_name)); pos++)
+   for(pos = 0; ((tinytac_conf_options[pos].opt_name)); pos++)
    {
       opt = &tinytac_conf_options[pos];
-      if (opt->map_value == TTAC_OPT_STOPINIT)
+      if (opt->opt_id == TTAC_OPT_STOPINIT)
          continue;
       tinytacb_strlcpy(varname, "TINYTAC_", sizeof(varname));
-      tinytacb_strlcat(varname, opt->map_name, sizeof(varname));
+      tinytacb_strlcat(varname, opt->opt_name, sizeof(varname));
       if ((value = getenv(varname)) != NULL)
          tinytac_conf_opt(opt, value);
    };
@@ -277,7 +296,7 @@ tinytac_conf_file(
    char                    value[TTAC_LINE_MAX_LEN];
    char **                 argv;
    const char *            val;
-   const bindle_map_t *    opt;
+   const tinytac_opt_t *   opt;
 
    TinyTacDebugTrace();
 
@@ -308,7 +327,7 @@ tinytac_conf_file(
          tinytacb_strsfree(argv);
          continue;
       };
-      if (tinytacb_map_lookup_name(tinytac_conf_options, argv[0], &opt) == 0)
+      if ((opt = tinytac_opt_lookup_name(argv[0])) == NULL)
       {
          tinytacb_strsfree(argv);
          continue;
@@ -331,14 +350,14 @@ tinytac_conf_file(
 
 int
 tinytac_conf_opt(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value )
 {
    int               ival;
 
    TinyTacDebugTrace();
 
-   switch(opt->map_value)
+   switch(opt->opt_id)
    {
       case TTAC_OPT_AUTHEN_ASCII:
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( TTAC_OPT_AUTHEN_ASCII, \"%s\" )", __func__, (((value)) ? value : "(null)"));
@@ -419,7 +438,7 @@ tinytac_conf_opt(
 
 int
 tinytac_conf_opt_flag(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value )
 {
    int               i;
@@ -428,8 +447,8 @@ tinytac_conf_opt_flag(
 
    switch(i = ((value)) ? tinytacb_strtobool(value) : TTAC_YES)
    {
-      case TTAC_NO:  return(tinytac_set_option(NULL, (int)opt->map_value, &i));
-      case TTAC_YES: return(tinytac_set_option(NULL, (int)opt->map_value, &i));
+      case TTAC_NO:  return(tinytac_set_option(NULL, (int)opt->opt_id, &i));
+      case TTAC_YES: return(tinytac_set_option(NULL, (int)opt->opt_id, &i));
       default: break;
    };
 
@@ -439,7 +458,7 @@ tinytac_conf_opt_flag(
 
 int
 tinytac_conf_opt_int(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value )
 {
    int      i;
@@ -452,13 +471,13 @@ tinytac_conf_opt_int(
    if ((endptr[0]))
       return(TTAC_SUCCESS);
 
-   return(tinytac_set_option(NULL, (int)opt->map_value, &i));
+   return(tinytac_set_option(NULL, (int)opt->opt_id, &i));
 }
 
 
 int
 tinytac_conf_opt_timeval(
-         const bindle_map_t *          opt,
+         const tinytac_opt_t *         opt,
          const char *                  value )
 {
    char *            endptr;
@@ -472,9 +491,21 @@ tinytac_conf_opt_timeval(
    if ((endptr[0]))
       return(TTAC_SUCCESS);
 
-   return(tinytac_set_option(NULL, (int)opt->map_value, &tv));
+   return(tinytac_set_option(NULL, (int)opt->opt_id, &tv));
 }
 
 
+tinytac_opt_t *
+tinytac_opt_lookup_name(
+         const char *                  name )
+{
+   size_t pos;
+   if (!(name))
+      return(NULL);
+   for(pos = 0; ((tinytac_conf_options[pos].opt_name)); pos++)
+      if (!(strcasecmp(tinytac_conf_options[pos].opt_name, name)))
+         return(&tinytac_conf_options[pos]);
+   return(NULL);
+}
 
 /* end of source */
