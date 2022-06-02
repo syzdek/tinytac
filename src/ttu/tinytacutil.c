@@ -42,9 +42,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/uio.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <stdarg.h>
 #include <assert.h>
 #include <errno.h>
@@ -299,7 +303,78 @@ ttu_cleanup(
          ttu_config_t *                cnf )
 {
    tinytac_free(cnf->tt);
+   if ((cnf->pass_buff))
+      free(cnf->pass_buff);
    return;
+}
+
+
+char *
+ttu_file2str(
+         const char *                  path )
+{
+   int               fd;
+   struct stat       sb;
+   char *            str;
+
+   if (stat(path, &sb) == -1)
+      return(NULL);
+
+   if ((str = malloc(sb.st_size+1)) == NULL)
+      return(NULL);
+
+   if ((fd = open(path, O_RDONLY)) == -1)
+   {
+      free(str);
+      return(NULL);
+   }
+
+   if (read(fd, str, sb.st_size) == -1)
+   {
+      close(fd);
+      free(str);
+      return(NULL);
+   };
+
+   str[sb.st_size] = '\0';
+   close(fd);
+
+   return(str);
+}
+
+
+int
+ttu_password(
+         ttu_config_t *                cnf )
+{
+   const char *   pass;
+
+   if ((cnf->pass))
+      return(0);
+
+   // process password file
+   if ((cnf->pass_file))
+   {
+      if ((cnf->pass_buff))
+         free(cnf->pass_buff);
+      if ((cnf->pass_buff = ttu_file2str(cnf->pass_file)) == NULL)
+         return(ttu_error(cnf, 1, "%s: %s", cnf->pass_file, strerror(errno)));
+      cnf->pass = cnf->pass_buff;
+   };
+
+   // prompt for password
+   if ((cnf->opts & TTUTILS_OPT_PASSPROMPT))
+   {
+      if ((pass = tinytacb_getpass("Enter TACACS+ Password: ")) == NULL)
+         return(ttu_error(cnf, 1, "getpass: %s", strerror(errno)));
+      if ((cnf->pass_buff))
+         free(cnf->pass_buff);
+      if ((cnf->pass_buff = tinytacb_strdup(pass)) == NULL)
+         return(ttu_error(cnf, 1, "%s", strerror(errno)));
+      cnf->pass = cnf->pass_buff;
+   };
+
+   return(0);
 }
 
 
@@ -320,7 +395,7 @@ ttu_cli_arguments(
    int            rc;
 
    // getopt options
-   static const char *  short_opt = "+46dH:hVvq";
+   static const char *  short_opt = "+46dH:hVvqWw:y:";
    static struct option long_opt[] =
    {
       {"help",             no_argument,       NULL, 'h' },
@@ -382,6 +457,24 @@ ttu_cli_arguments(
          cnf->opts &= ~TTUTILS_OPT_QUIET;
          break;
 
+         case 'W':
+         cnf->opts      |= TTUTILS_OPT_PASSPROMPT;
+         cnf->pass       = NULL;
+         cnf->pass_file  = NULL;
+         break;
+
+         case 'w':
+         cnf->opts      &= ~TTUTILS_OPT_PASSPROMPT;
+         cnf->pass       = optarg;
+         cnf->pass_file  = NULL;
+         break;
+
+         case 'y':
+         cnf->opts      &= ~TTUTILS_OPT_PASSPROMPT;
+         cnf->pass       = NULL;
+         cnf->pass_file  = optarg;
+         break;
+
          case '?':
          fprintf(stderr, "Try `%s --help' for more information.\n", PROGRAM_NAME);
          return(1);
@@ -423,6 +516,9 @@ ttu_usage(
    printf("  -q, --quiet, --silent     do not print messages\n");
    printf("  -V, --version             print version number and exit\n");
    printf("  -v, --verbose             print verbose messages\n");
+   printf("  -W                        prompt for authentication password\n");
+   printf("  -w passwd                 authentication password\n");
+   printf("  -y file                   read password from file\n");
    if (!(cnf->widget))
    {
       printf("WIDGETS:\n");

@@ -56,6 +56,7 @@
 
 #define TTUTILS_OPT_QUIET           0x00000001U
 #define TTUTILS_OPT_VERBOSE         0x00000002U
+#define TTUTILS_OPT_PASSPROMPT      0x00000004U
 
 
 //////////////////
@@ -73,6 +74,9 @@ struct _tinytac_util_config
    unsigned                   opts;
    int                        argc;
    char **                    argv;
+   const char *               pass;
+   const char *               pass_file;
+   char *                     pass_buff;
    const char *               prog_name;
    const ttu_widget_t *       widget;
    TinyTac *                  tt;
@@ -132,6 +136,21 @@ tru_verbose(
          ttu_config_t *                cnf,
          const char *                  fmt,
          ... );
+
+
+//--------------------------//
+// miscellaneous prototypes //
+//--------------------------//
+#pragma mark miscellaneous prototypes
+
+extern char *
+ttu_file2str(
+         const char *                  path );
+
+
+extern int
+ttu_password(
+         ttu_config_t *                cnf );
 
 
 //------------------//

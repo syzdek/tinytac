@@ -102,6 +102,14 @@ ttu_widget_authen(
    // initial processing of cli arguments
    if ((rc = ttu_cli_arguments(cnf, cnf->argc, cnf->argv)) != 0)
       return((rc == -1) ? 0 : 1);
+   if ((ttu_password(cnf)))
+      return(1);
+   if (!(cnf->pass))
+   {
+      fprintf(stderr, "%s: missing required argument -W, -w, or -y\n", cnf->prog_name);
+      fprintf(stderr, "Try `%s --help' for more information.\n", cnf->prog_name);
+      return(1);
+   };
 
    return(0);
 }
