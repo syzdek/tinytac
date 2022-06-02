@@ -42,6 +42,7 @@
 #include <stddef.h>
 #include <inttypes.h>
 #include <sys/types.h>
+#include <stdio.h>
 #include <tinytac_plus.h>
 
 
