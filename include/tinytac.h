@@ -174,13 +174,12 @@
 #define TTAC_DFLT_DEBUG_SYSLOG            TTAC_NO
 #define TTAC_DFLT_HOSTS                   "localhost"
 #define TTAC_DFLT_SECRETS                 NULL
-#define TTAC_DFLT_OPTS                    ( TTAC_URANDOM | TTAC_IP_UNSPEC | TTAC_AUTHEN_TYPES )
+#define TTAC_DFLT_OPTS                    ( TTAC_URANDOM | TTAC_AUTHEN_TYPES)
 #define TTAC_DFLT_OPTS_NEG                0
 #define TTAC_DFLT_PORT                    49
 #define TTAC_DFLT_TIMEOUT                 10
 #define TTAC_DFLT_NET_TIMEOUT_SEC         10
 #define TTAC_DFLT_NET_TIMEOUT_USEC        0
-#define TTAC_DFLT_RANDOM                  TTAC_URANDOM
 
 
 //////////////////

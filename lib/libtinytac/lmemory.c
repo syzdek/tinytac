@@ -374,15 +374,23 @@ tinytac_initialize(
    if ((opts & TTAC_RND_METHODS))
       tt->opts &= ~TTAC_RND_METHODS;
    tt->opts |= opts;
-   if (!(tt->opts & TTAC_IP_UNSPEC))
-      if (!(tt->opts |= TTAC_IP_UNSPEC & tinytac_dflt.opts))
-         tt->opts |= TTAC_DFLT_IP & ~tinytac_dflt.opts_neg;
-   if (!(tt->opts & TTAC_AUTHEN_TYPES))
-      if (!(tt->opts |= TTAC_AUTHEN_TYPES & tinytac_dflt.opts))
-         tt->opts |= TTAC_DFLT_AUTHEN & ~tinytac_dflt.opts_neg;
    if (!(tt->opts & TTAC_RND_METHODS))
-      if (!(tt->opts |= TTAC_RND_METHODS & tinytac_dflt.opts))
-         tt->opts |= TTAC_DFLT_RANDOM;
+      tt->opts |= TTAC_RND_METHODS & tinytac_dflt.opts;
+   if (!(tt->opts & TTAC_IP_UNSPEC))
+   {
+      if ((TTAC_IP_UNSPEC & tinytac_dflt.opts))
+         tt->opts |= tinytac_dflt.opts & TTAC_IP_UNSPEC;
+      else
+         tt->opts |= (TTAC_DFLT_OPTS & TTAC_IP_UNSPEC) & ~tinytac_dflt.opts_neg;
+      tt->opts |= TTAC_IP_UNSPEC & tinytac_dflt.opts;
+   };
+   if (!(tt->opts & TTAC_AUTHEN_TYPES))
+   {
+      if ((TTAC_AUTHEN_TYPES & tinytac_dflt.opts))
+         tt->opts |= tinytac_dflt.opts & TTAC_AUTHEN_TYPES;
+      else
+         tt->opts |= (TTAC_DFLT_OPTS & TTAC_AUTHEN_TYPES) & ~tinytac_dflt.opts_neg;
+   };
 
    // apply user options
    if ((rc = tinytac_set_option(tt, TTAC_OPT_HOSTS, hosts)) != TTAC_SUCCESS)
@@ -506,7 +514,7 @@ tinytac_set_option(
 
       case TTAC_OPT_RANDOM:
       TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_RANDOM, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
-      idflt = ((tt))      ? tinytac_dflt.opts       : TTAC_DFLT_RANDOM;
+      idflt = ((tt))      ? tinytac_dflt.opts       : TTAC_DFLT_OPTS;
       ival  = ((invalue)) ? *((const int *)invalue) : (idflt & TTAC_RND_METHODS);
       switch(ival)
       {  case TTAC_RAND:    TinyTacDebug(TTAC_DEBUG_ARGS, "   <= invalue: %s", "TTAC_RAND");    break;
