@@ -396,9 +396,10 @@ ttu_cli_arguments(
    int            opt;
    int            ival;
    int            rc;
+   void *         ptr;
 
    // getopt options
-   static const char *  short_opt = "+46a:dH:hVvqWw:y:";
+   static const char *  short_opt = "+46a:dH:hK:k:VvqWw:y:";
    static struct option long_opt[] =
    {
       {"help",             no_argument,       NULL, 'h' },
@@ -461,6 +462,20 @@ ttu_cli_arguments(
          case 'h':
          ttu_usage(cnf);
          return(-1);
+
+         case 'K':
+         if ((ptr = ttu_file2str(optarg)) == NULL)
+            return(ttu_error(cnf, 1, "%s: %s", optarg, strerror(errno)));
+         rc = tinytac_set_option(cnf->tt, TTAC_OPT_KEY, ptr);
+         free(ptr);
+         if (rc != TTAC_SUCCESS)
+            return(ttu_error(cnf, 1, "tinytac_set_option(TTAC_OPT_KEY): %s", tinytac_strerror(rc)));
+         break;
+
+         case 'k':
+         if ((rc = tinytac_set_option(cnf->tt, TTAC_OPT_KEY, optarg)) != TTAC_SUCCESS)
+            return(ttu_error(cnf, 1, "tinytac_set_option(TTAC_OPT_KEY): %s", tinytac_strerror(rc)));
+         break;
 
          case 'q':
          cnf->opts |=  TTUTILS_OPT_QUIET;
