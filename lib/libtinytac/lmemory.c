@@ -402,11 +402,11 @@ tinytac_set_option(
          int                           option,
          const void *                  invalue )
 {
-   int            rc;
-   int            ival;
-   int            idflt;
-   const char *   istr;
-   struct timeval tv;
+   int               rc;
+   int               ival;
+   int               idflt;
+   const char *      istr;
+   struct timeval    tv;
 
    TinyTacDebugTrace();
 
