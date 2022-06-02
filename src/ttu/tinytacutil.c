@@ -392,10 +392,11 @@ ttu_cli_arguments(
    int            c;
    int            opt_index;
    int            opt;
+   int            ival;
    int            rc;
 
    // getopt options
-   static const char *  short_opt = "+46dH:hVvqWw:y:";
+   static const char *  short_opt = "+46a:dH:hVvqWw:y:";
    static struct option long_opt[] =
    {
       {"help",             no_argument,       NULL, 'h' },
@@ -421,17 +422,33 @@ ttu_cli_arguments(
          break;
 
          case '4':
-         opt = TTAC_YES; tinytac_set_option(cnf->tt, TTAC_OPT_IPV4, &opt);
-         opt = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_IPV6, &opt);
+         ival = TTAC_YES; tinytac_set_option(cnf->tt, TTAC_OPT_IPV4, &ival);
+         ival = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_IPV6, &ival);
          break;
 
          case '6':
-         opt = TTAC_YES; tinytac_set_option(cnf->tt, TTAC_OPT_IPV6, &opt);
-         opt = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_IPV4, &opt);
+         ival = TTAC_YES; tinytac_set_option(cnf->tt, TTAC_OPT_IPV6, &ival);
+         ival = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_IPV4, &ival);
+         break;
+
+         case 'a':
+         opt = 0;
+         if      (!(strcasecmp(optarg, "ascii")))    opt = TTAC_OPT_AUTHEN_ASCII;
+         else if (!(strcasecmp(optarg, "chap")))     opt = TTAC_OPT_AUTHEN_CHAP;
+         else if (!(strcasecmp(optarg, "mschap")))   opt = TTAC_OPT_AUTHEN_MSCHAP;
+         else if (!(strcasecmp(optarg, "mschapv2"))) opt = TTAC_OPT_AUTHEN_MSCHAPV2;
+         else if (!(strcasecmp(optarg, "pap")))      opt = TTAC_OPT_AUTHEN_PAP;
+         else
+         {  fprintf(stderr, "%s: unknown authentication type `%s'\n", PROGRAM_NAME, optarg);
+            fprintf(stderr, "Try `%s --help' for more information.\n", PROGRAM_NAME);
+            return(1);
+         };
+         ival = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_AUTHEN_ALL, &ival);
+         ival = TTAC_YES; tinytac_set_option(cnf->tt, opt, &ival);
          break;
 
          case 'd':
-         opt = TTAC_DEBUG_ANY; tinytac_set_option(NULL, TTAC_OPT_DEBUG_LEVEL, &opt);
+         ival = TTAC_DEBUG_ANY; tinytac_set_option(NULL, TTAC_OPT_DEBUG_LEVEL, &ival);
          break;
 
          case 'H':
@@ -510,6 +527,7 @@ ttu_usage(
    printf("OPTIONS:\n");
    printf("  -4                        use IPv4\n");
    printf("  -6                        use IPv6\n");
+   printf("  -a type                   authen type: ascii, pap, chap, mschap, or mschapv2\n");
    printf("  -d, --debug               print debug messages\n");
    printf("  -H host                   TACACS+ host\n");
    printf("  -h, --help                print this help and exit\n");
