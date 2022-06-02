@@ -202,6 +202,12 @@ tinytac_get_option(
    // get global options
    switch(option)
    {
+      case TTAC_OPT_AUTHEN_ALL:
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_ALL, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
+      TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_AUTHEN_TYPES) == TTAC_AUTHEN_TYPES) ? "TTAC_YES" : "TTAC_NO");
+      *((int *)outvalue) = ((opts & TTAC_AUTHEN_TYPES) == TTAC_AUTHEN_TYPES) ? TTAC_YES : TTAC_NO;
+      return(TTAC_SUCCESS);
+
       case TTAC_OPT_AUTHEN_ASCII:
       TinyTacDebug(TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_ASCII, outvalue )", __func__, (((tt)) ? "tt" : "NULL"));
       TinyTacDebug(TTAC_DEBUG_ARGS, "   <= outvalue: %s", ((opts & TTAC_ASCII)) ? "TTAC_YES" : "TTAC_NO");
@@ -407,6 +413,7 @@ tinytac_set_option(
    int               idflt;
    const char *      istr;
    struct timeval    tv;
+   const void *      ptr;
 
    TinyTacDebugTrace();
 
@@ -416,6 +423,12 @@ tinytac_set_option(
 
    switch(option)
    {
+      case TTAC_OPT_AUTHEN_ALL:
+      TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_ALL, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
+      ival = TTAC_YES;
+      ptr = ((invalue)) ? invalue : &ival;
+      return(tinytac_set_option_flag(tt, TTAC_AUTHEN_TYPES, ptr));
+
       case TTAC_OPT_AUTHEN_ASCII:
       TinyTacDebug(  TTAC_DEBUG_ARGS, "   == %s( %s, TTAC_OPT_AUTHEN_ASCII, invalue )", __func__, (((tt)) ? "tt" : "NULL") );
       return(tinytac_set_option_flag(tt, TTAC_ASCII, invalue));
