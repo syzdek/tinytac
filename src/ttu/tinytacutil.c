@@ -28,7 +28,7 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
  */
-#define _SRC_TRU_TINYTACUTIL_C 1
+#define _SRC_TTU_TINYTACUTIL_C 1
 #include "tinytacutil.h"
 
 ///////////////
@@ -45,10 +45,12 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <stdarg.h>
 #include <assert.h>
 #include <errno.h>
 
 #include <tinytac.h>
+#include <bindle_prefix.h>
 
 
 ///////////////////
@@ -96,12 +98,63 @@ main(
          char *                        argv[] );
 
 
+static void
+ttu_cleanup(
+         ttu_config_t *                cnf );
+
+
+static ttu_widget_t *
+ttu_widget_lookup(
+         const char *                  wname,
+         int                           exact );
+
+
 /////////////////
 //             //
 //  Variables  //
 //             //
 /////////////////
 #pragma mark - Variables
+
+#pragma mark ttu_widget_map[]
+ttu_widget_t ttu_widget_map[] =
+{
+   {  .name       = "acct",
+      .desc       = "TACACS+ accounting client",
+      .usage      = NULL,
+      .aliases    = (const char * const[]) { "accounting", NULL },
+      .func_exec  = &ttu_widget_acct,
+      .func_usage = NULL,
+   },
+   {  .name       = "authen",
+      .desc       = "TACACS+ authentication client",
+      .usage      = " username",
+      .aliases    = (const char * const[]) { "authentication", NULL },
+      .func_exec  = &ttu_widget_authen,
+      .func_usage = NULL,
+   },
+   {  .name       = "author",
+      .desc       = "TACACS+ authorization client",
+      .usage      = " username cmd [ arg1 arg2 ... argN ]",
+      .aliases    = (const char * const[]) { "authorization", NULL },
+      .func_exec  = &ttu_widget_author,
+      .func_usage = NULL,
+   },
+   {  .name       = "config",
+      .desc       = "print configuration",
+      .usage      = NULL,
+      .aliases    = (const char * const[]) { "configuration", NULL },
+      .func_exec  = &ttu_widget_config,
+      .func_usage = NULL,
+   },
+   {  .name       = NULL,
+      .desc       = NULL,
+      .usage      = NULL,
+      .aliases    = NULL,
+      .func_exec  = NULL,
+      .func_usage = NULL,
+   }
+};
 
 
 /////////////////
@@ -118,13 +171,156 @@ main(
 
 int main(int argc, char * argv[])
 {
-   int                           c;
    int                           rc;
-   int                           opt;
-   int                           opt_index;
+   ttu_config_t                  cnfdata;
+
+   memset(&cnfdata, 0, sizeof(cnfdata));
+
+   // determine program name
+   if ((cnfdata.prog_name = strrchr(argv[0], '/')) != NULL)
+      cnfdata.prog_name = &cnfdata.prog_name[1];
+   if (!(cnfdata.prog_name))
+      cnfdata.prog_name = argv[0];
+
+   // initialize state
+   if ((rc = tinytac_set_option(NULL, TTAC_OPT_DEBUG_IDENT, PROGRAM_NAME)) != TTAC_SUCCESS)
+   {
+      fprintf(stderr, "%s: tinytac_set_option(%s): %s\n", PROGRAM_NAME, "TTAC_OPT_DEBUG_IDENT", tinytac_strerror(rc));
+      return(1);
+   };
+   if ((rc = tinytac_initialize(&cnfdata.tt, NULL, NULL, 0)) != TTAC_SUCCESS)
+   {
+      fprintf(stderr, "%s: tinytac_initialize(): %s\n", PROGRAM_NAME, tinytac_strerror(rc));
+      return(1);
+   };
+
+   // skip argument processing if called via alias
+   if ((cnfdata.widget = ttu_widget_lookup(cnfdata.prog_name, TTAC_YES)) != NULL)
+   {
+      cnfdata.argc        = argc;
+      cnfdata.argv        = argv;
+      rc = cnfdata.widget->func_exec(&cnfdata);
+      ttu_cleanup(&cnfdata);
+      return(rc);
+   };
+
+   // initial processing of cli arguments
+   if ((rc = ttu_cli_arguments(&cnfdata, argc, argv)) != 0)
+      return((rc == -1) ? 0 : 1);
+   if ((argc - optind) < 1)
+   {
+      fprintf(stderr, "%s: missing required argument\n", cnfdata.prog_name);
+      fprintf(stderr, "Try `%s --help' for more information.\n", cnfdata.prog_name);
+      return(1);
+   };
+   cnfdata.argc        = (argc - optind);
+   cnfdata.argv        = &argv[optind];
+
+   // looks up widget
+   if ((cnfdata.widget = ttu_widget_lookup(argv[optind], TTAC_NO)) == NULL)
+   {
+      fprintf(stderr, "%s: unknown or ambiguous widget -- \"%s\"\n", cnfdata.prog_name, cnfdata.argv[0]);
+      fprintf(stderr, "Try `%s --help' for more information.\n", cnfdata.prog_name);
+      return(1);
+   };
+
+   rc = cnfdata.widget->func_exec(&cnfdata);
+   ttu_cleanup(&cnfdata);
+
+   return(rc);
+}
+
+
+//-------------------//
+// logging functions //
+//-------------------//
+#pragma mark logging functions
+
+int
+ttu_error(
+         ttu_config_t *                cnf,
+         int                           rc,
+         const char *                  fmt,
+         ... )
+{
+   va_list args;
+   if ((cnf->opts & TTUTILS_OPT_QUIET))
+      return(rc);
+   fprintf(stderr, "%s: ", (((cnf->prog_name)) ? cnf->prog_name : PROGRAM_NAME));
+   va_start(args, fmt);
+   vfprintf(stderr, fmt, args);
+   va_end(args);
+   fprintf(stderr, "\n");
+   return(rc);
+}
+
+
+int
+ttu_printf(
+         ttu_config_t *                cnf,
+         const char *                  fmt,
+         ... )
+{
+   int            rc;
+   va_list        args;
+   if ((cnf->opts & TTUTILS_OPT_QUIET))
+      return(0);
+   va_start(args, fmt);
+   rc = vprintf(fmt, args);
+   va_end(args);
+   return(rc);
+}
+
+
+int
+tru_verbose(
+         ttu_config_t *                cnf,
+         const char *                  fmt,
+         ... )
+{
+   int            rc;
+   va_list        args;
+   if (!(cnf->opts & TTUTILS_OPT_VERBOSE))
+      return(0);
+   va_start(args, fmt);
+   rc = vprintf(fmt, args);
+   va_end(args);
+   return(rc);
+}
+
+
+//-------------------------//
+// miscellaneous functions //
+//-------------------------//
+#pragma mark miscellaneous functions
+
+void
+ttu_cleanup(
+         ttu_config_t *                cnf )
+{
+   tinytac_free(cnf->tt);
+   return;
+}
+
+
+//-----------------//
+// usage functions //
+//-----------------//
+#pragma mark usage functions
+
+int
+ttu_cli_arguments(
+         ttu_config_t *                cnf,
+         int                           argc,
+         char * const *                argv )
+{
+   int            c;
+   int            opt_index;
+   int            opt;
+   int            rc;
 
    // getopt options
-   static char          short_opt[] = "46dhVvq";
+   static const char *  short_opt = "+46dH:hVvq";
    static struct option long_opt[] =
    {
       {"help",             no_argument,       NULL, 'h' },
@@ -135,11 +331,11 @@ int main(int argc, char * argv[])
       { NULL, 0, NULL, 0 }
    };
 
-   if ((rc = tinytac_set_option(NULL, TTAC_OPT_DEBUG_IDENT, PROGRAM_NAME)) != TTAC_SUCCESS)
-   {
-      fprintf(stderr, "%s: tinytac_set_option(%s): %s\n", PROGRAM_NAME, "TTAC_OPT_DEBUG_IDENT", tinytac_strerror(rc));
-      return(1);
-   };
+   optind    = 1;
+   opt_index = 0;
+
+   if ((cnf->widget))
+      short_opt = &short_opt[1];
 
    while((c = getopt_long(argc, argv, short_opt, long_opt, &opt_index)) != -1)
    {
@@ -150,40 +346,40 @@ int main(int argc, char * argv[])
          break;
 
          case '4':
-         opt = TTAC_YES; tinytac_set_option(NULL, TTAC_OPT_IPV4, &opt);
-         opt = TTAC_NO;  tinytac_set_option(NULL, TTAC_OPT_IPV6, &opt);
+         opt = TTAC_YES; tinytac_set_option(cnf->tt, TTAC_OPT_IPV4, &opt);
+         opt = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_IPV6, &opt);
          break;
 
          case '6':
-         opt = TTAC_YES; tinytac_set_option(NULL, TTAC_OPT_IPV6, &opt);
-         opt = TTAC_NO;  tinytac_set_option(NULL, TTAC_OPT_IPV4, &opt);
+         opt = TTAC_YES; tinytac_set_option(cnf->tt, TTAC_OPT_IPV6, &opt);
+         opt = TTAC_NO;  tinytac_set_option(cnf->tt, TTAC_OPT_IPV4, &opt);
          break;
 
          case 'd':
          opt = TTAC_DEBUG_ANY; tinytac_set_option(NULL, TTAC_OPT_DEBUG_LEVEL, &opt);
          break;
 
+         case 'H':
+         if ((rc = tinytac_set_option(cnf->tt, TTAC_OPT_HOSTS, optarg)) != TTAC_SUCCESS)
+            return(ttu_error(cnf, 1, "tinytac_set_option(TTAC_OPT_HOSTS): %s", tinytac_strerror(rc)));
+         break;
+
          case 'h':
-         printf("Usage: %s [OPTIONS]\n", PROGRAM_NAME);
-         printf("OPTIONS:\n");
-         printf("  -4                        use IPv4\n");
-         printf("  -6                        use IPv6\n");
-         printf("  -d, --debug               print debug messages\n");
-         printf("  -h, --help                print this help and exit\n");
-         printf("  -q, --quiet, --silent     do not print messages\n");
-         printf("  -V, --version             print version number and exit\n");
-         printf("  -v, --verbose             print verbose messages\n");
-         printf("\n");
-         return(0);
+         ttu_usage(cnf);
+         return(-1);
 
          case 'q':
+         cnf->opts |=  TTUTILS_OPT_QUIET;
+         cnf->opts &= ~TTUTILS_OPT_VERBOSE;
          break;
 
          case 'V':
          printf("%s (%s) %s\n", PROGRAM_NAME, PACKAGE_NAME, PACKAGE_VERSION);
-         return(0);
+         return(-1);
 
          case 'v':
+         cnf->opts |=  TTUTILS_OPT_VERBOSE;
+         cnf->opts &= ~TTUTILS_OPT_QUIET;
          break;
 
          case '?':
@@ -199,5 +395,116 @@ int main(int argc, char * argv[])
 
    return(0);
 }
+
+
+int
+ttu_usage(
+         ttu_config_t *                cnf )
+{
+   size_t            pos;
+   const char *      widget_name;
+   const char *      widget_help;
+   ttu_widget_t *    widget;
+
+   widget_name  = (!(cnf->widget)) ? "widget" : cnf->widget->name;
+   widget_help  = "";
+   if ((cnf->widget))
+      widget_help = ((cnf->widget->usage)) ? cnf->widget->usage : "";
+
+   printf("Usage: %s [OPTIONS] %s [OPTIONS]%s\n", PROGRAM_NAME, widget_name, widget_help);
+   printf("       %s-%s [OPTIONS]%s\n", PROGRAM_NAME, widget_name, widget_help);
+   printf("       %s%s [OPTIONS]%s\n", PROGRAM_NAME, widget_name, widget_help);
+   printf("OPTIONS:\n");
+   printf("  -4                        use IPv4\n");
+   printf("  -6                        use IPv6\n");
+   printf("  -d, --debug               print debug messages\n");
+   printf("  -H host                   TACACS+ host\n");
+   printf("  -h, --help                print this help and exit\n");
+   printf("  -q, --quiet, --silent     do not print messages\n");
+   printf("  -V, --version             print version number and exit\n");
+   printf("  -v, --verbose             print verbose messages\n");
+   if (!(cnf->widget))
+   {
+      printf("WIDGETS:\n");
+      for(pos = 0; ttu_widget_map[pos].name != NULL; pos++)
+      {
+         widget = &ttu_widget_map[pos];
+         if ((widget->desc))
+            printf("  %-25s %s\n", widget->name, widget->desc);
+      };
+   };
+   if ((cnf->widget))
+      if ((cnf->widget->func_usage))
+         cnf->widget->func_usage(cnf);
+   printf("\n");
+
+   return(0);
+}
+
+
+ttu_widget_t *
+ttu_widget_lookup(
+         const char *                  wname,
+         int                           exact )
+{
+   size_t                     x;
+   size_t                     y;
+   size_t                     len;
+   size_t                     wname_len;
+   const char *               alias;
+   ttu_widget_t *             match;
+   ttu_widget_t *             widget;
+
+   // strip program prefix from widget name
+   len = strlen(PROGRAM_NAME);
+   if (!(strncasecmp(wname, PROGRAM_NAME, len)))
+      wname = &wname[len];
+   if (wname[0] == '-')
+      wname = &wname[1];
+   if (!(wname[0]))
+      return(NULL);
+
+   match       = NULL;
+   wname_len   = strlen(wname);
+
+   for(x = 0; ((ttu_widget_map[x].name)); x++)
+   {
+      // check widget
+      widget = &ttu_widget_map[x];
+      if (widget->func_exec == NULL)
+         continue;
+
+      // compare widget name for match
+      if (!(strncmp(widget->name, wname, wname_len)))
+      {
+         if (widget->name[wname_len] == '\0')
+            return(widget);
+         if ( ((match)) && (match != widget) )
+            return(NULL);
+         if (exact == TTAC_NO)
+            match = widget;
+      };
+
+      if (!(widget->aliases))
+         continue;
+
+      for(y = 0; ((widget->aliases[y])); y++)
+      {
+         alias = widget->aliases[y];
+         if (!(strncmp(alias, wname, wname_len)))
+         {
+            if (alias[wname_len] == '\0')
+               return(widget);
+            if ( ((match)) && (match != widget) )
+               return(NULL);
+            if (exact == TTAC_NO)
+               match = widget;
+         };
+      };
+   };
+
+   return((exact == TTAC_NO) ? match : NULL);
+}
+
 
 /* end of source */

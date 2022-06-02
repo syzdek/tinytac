@@ -28,8 +28,8 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
  */
-#ifndef _SRC_TRU_TINYTACUTIL_H
-#define _SRC_TRU_TINYTACUTIL_H 1
+#ifndef _SRC_TTU_TINYTACUTIL_H
+#define _SRC_TTU_TINYTACUTIL_H 1
 
 ///////////////
 //           //
@@ -39,6 +39,9 @@
 #pragma mark - Headers
 
 #include <tinytac_compat.h>
+
+#include <stdlib.h>
+#include <tinytac.h>
 
 
 ///////////////////
@@ -51,6 +54,9 @@
 #undef PROGRAM_NAME
 #define PROGRAM_NAME "tinytac"
 
+#define TTUTILS_OPT_QUIET           0x00000001U
+#define TTUTILS_OPT_VERBOSE         0x00000002U
+
 
 //////////////////
 //              //
@@ -58,6 +64,30 @@
 //              //
 //////////////////
 #pragma mark - Data Types
+
+typedef struct _tinytac_util_widget     ttu_widget_t;
+typedef struct _tinytac_util_config     ttu_config_t;
+
+struct _tinytac_util_config
+{
+   unsigned                   opts;
+   int                        argc;
+   char **                    argv;
+   const char *               prog_name;
+   const ttu_widget_t *       widget;
+   TinyTac *                  tt;
+};
+
+
+struct _tinytac_util_widget
+{
+   const char *               name;
+   const char *               desc;
+   const char *               usage;
+   const char * const *       aliases;
+   int  (*func_exec)(ttu_config_t * cnf);
+   int  (*func_usage)(ttu_config_t * cnf);
+};
 
 
 /////////////////
@@ -67,6 +97,8 @@
 /////////////////
 #pragma mark - Variables
 
+extern ttu_widget_t ttu_widget_map[];
+
 
 //////////////////
 //              //
@@ -74,6 +106,81 @@
 //              //
 //////////////////
 #pragma mark - Prototypes
+
+//--------------------//
+// logging prototypes //
+//--------------------//
+#pragma mark logging prototypes
+
+extern int
+ttu_error(
+         ttu_config_t *                cnf,
+         int                           rc,
+         const char *                  fmt,
+         ... );
+
+
+extern int
+ttu_printf(
+         ttu_config_t *                cnf,
+         const char *                  fmt,
+         ... );
+
+
+extern int
+tru_verbose(
+         ttu_config_t *                cnf,
+         const char *                  fmt,
+         ... );
+
+
+//------------------//
+// usage prototypes //
+//------------------//
+#pragma mark usage prototypes
+
+extern int
+ttu_cli_arguments(
+         ttu_config_t *                cnf,
+         int                           argc,
+         char * const *                argv );
+
+
+extern int
+ttu_usage(
+         ttu_config_t *                cnf );
+
+
+extern int
+tru_verbose(
+         ttu_config_t *                cnf,
+         const char *                  fmt,
+         ... );
+
+
+//-------------------//
+// widget prototypes //
+//-------------------//
+#pragma mark widget prototypes
+
+extern int
+ttu_widget_acct(
+         ttu_config_t *                cnf );
+
+
+extern int
+ttu_widget_authen(
+         ttu_config_t *                cnf );
+
+
+extern int
+ttu_widget_author(
+         ttu_config_t *                cnf );
+
+
+extern int
+ttu_widget_config(
+         ttu_config_t *                cnf );
 
 
 #endif /* end of header */

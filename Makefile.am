@@ -203,7 +203,11 @@ src_tinytac_LDADD			= $(lib_LTLIBRARIES) \
 					  $(noinst_LIBRARIES)
 src_tinytac_SOURCES			= $(noinst_HEADERS) $(include_HEADERS) \
 					  src/ttu/tinytacutil.c \
-					  src/ttu/tinytacutil.h
+					  src/ttu/tinytacutil.h \
+					  src/ttu/widget-acct.c \
+					  src/ttu/widget-authen.c \
+					  src/ttu/widget-author.c \
+					  src/ttu/widget-config.c
 
 
 # Makefile includes
