@@ -120,10 +120,11 @@ int main(int argc, char * argv[])
 {
    int                           c;
    int                           rc;
+   int                           opt;
    int                           opt_index;
 
    // getopt options
-   static char          short_opt[] = "hVvq";
+   static char          short_opt[] = "46dhVvq";
    static struct option long_opt[] =
    {
       {"help",             no_argument,       NULL, 'h' },
@@ -148,12 +149,25 @@ int main(int argc, char * argv[])
          case 0:        /* long options toggles */
          break;
 
+         case '4':
+         opt = TTAC_YES; tinytac_set_option(NULL, TTAC_OPT_IPV4, &opt);
+         opt = TTAC_NO;  tinytac_set_option(NULL, TTAC_OPT_IPV6, &opt);
+         break;
+
+         case '6':
+         opt = TTAC_YES; tinytac_set_option(NULL, TTAC_OPT_IPV6, &opt);
+         opt = TTAC_NO;  tinytac_set_option(NULL, TTAC_OPT_IPV4, &opt);
+         break;
+
          case 'd':
+         opt = TTAC_DEBUG_ANY; tinytac_set_option(NULL, TTAC_OPT_DEBUG_LEVEL, &opt);
          break;
 
          case 'h':
          printf("Usage: %s [OPTIONS]\n", PROGRAM_NAME);
          printf("OPTIONS:\n");
+         printf("  -4                        use IPv4\n");
+         printf("  -6                        use IPv6\n");
          printf("  -d, --debug               print debug messages\n");
          printf("  -h, --help                print this help and exit\n");
          printf("  -q, --quiet, --silent     do not print messages\n");
