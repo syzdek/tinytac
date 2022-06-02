@@ -299,6 +299,16 @@ struct _tinytac_account_reply
 //////////////////
 #pragma mark - Prototypes
 
+//-----------------//
+// conf prototypes //
+//-----------------//
+#pragma mark conf prototypes
+
+void
+tinytac_conf_print(
+         TinyTac *                     tt );
+
+
 //------------------//
 // error prototypes //
 //------------------//

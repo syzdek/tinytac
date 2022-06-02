@@ -30,6 +30,9 @@
 #
 #   lib/libtinytac/libtinytac.sym - list of symbols to export
 #
+# conf functions
+tinytac_conf_print
+#
 # error functions
 tinytac_strerror
 tinytac_strerror_r

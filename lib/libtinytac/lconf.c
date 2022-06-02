@@ -63,6 +63,14 @@
 #   define SYSCONFDIR "/etc"
 #endif
 
+#define TTAC_OTYPE_NONE    0
+#define TTAC_OTYPE_INT     1
+#define TTAC_OTYPE_STR     2
+#define TTAC_OTYPE_FLAG    3
+#define TTAC_OTYPE_TV      4
+#define TTAC_OTYPE_UINT    5
+#define TTAC_OTYPE_OTHER   ~0
+
 
 //////////////////
 //              //
@@ -75,6 +83,7 @@ typedef struct _tinytac_opt
 {
    const char *          opt_name;
    uintptr_t             opt_id;
+   uintptr_t             opt_type;
 } tinytac_opt_t;
 
 
@@ -92,22 +101,22 @@ static atomic_int tinytac_conf_init;
 #pragma mark tinytac_conf_options[]
 static tinytac_opt_t tinytac_conf_options[] =
 {
-   { .opt_name = "AUTHEN_ASCII",       .opt_id = TTAC_OPT_AUTHEN_ASCII },
-   { .opt_name = "AUTHEN_CHAP",        .opt_id = TTAC_OPT_AUTHEN_CHAP },
-   { .opt_name = "AUTHEN_MSCHAP",      .opt_id = TTAC_OPT_AUTHEN_MSCHAP },
-   { .opt_name = "AUTHEN_MSCHAPV2",    .opt_id = TTAC_OPT_AUTHEN_MSCHAPV2 },
-   { .opt_name = "AUTHEN_PAP",         .opt_id = TTAC_OPT_AUTHEN_PAP },
-   { .opt_name = "DEBUG_LEVEL",        .opt_id = TTAC_OPT_DEBUG_LEVEL },
-   { .opt_name = "DEBUG_SYSLOG",       .opt_id = TTAC_OPT_DEBUG_SYSLOG },
-   { .opt_name = "HOST",               .opt_id = TTAC_OPT_HOSTS },
-   { .opt_name = "IPV4",               .opt_id = TTAC_OPT_IPV4 },
-   { .opt_name = "IPV6",               .opt_id = TTAC_OPT_IPV6 },
-   { .opt_name = "KEY",                .opt_id = TTAC_OPT_KEY },
-   { .opt_name = "NETWORK_TIMEOUT",    .opt_id = TTAC_OPT_NETWORK_TIMEOUT },
-   { .opt_name = "RANDOM",             .opt_id = TTAC_OPT_RANDOM },
-   { .opt_name = "STOPINIT",           .opt_id = TTAC_OPT_STOPINIT },
-   { .opt_name = "TIMEOUT",            .opt_id = TTAC_OPT_TIMEOUT },
-   { .opt_name = NULL,                 .opt_id = 0 }
+   { .opt_name = "AUTHEN_ASCII",       .opt_id = TTAC_OPT_AUTHEN_ASCII,    .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "AUTHEN_CHAP",        .opt_id = TTAC_OPT_AUTHEN_CHAP,     .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "AUTHEN_MSCHAP",      .opt_id = TTAC_OPT_AUTHEN_MSCHAP,   .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "AUTHEN_MSCHAPV2",    .opt_id = TTAC_OPT_AUTHEN_MSCHAPV2, .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "AUTHEN_PAP",         .opt_id = TTAC_OPT_AUTHEN_PAP,      .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "DEBUG_LEVEL",        .opt_id = TTAC_OPT_DEBUG_LEVEL,     .opt_type = TTAC_OTYPE_UINT },
+   { .opt_name = "DEBUG_SYSLOG",       .opt_id = TTAC_OPT_DEBUG_SYSLOG,    .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "HOST",               .opt_id = TTAC_OPT_HOSTS,           .opt_type = TTAC_OTYPE_STR },
+   { .opt_name = "IPV4",               .opt_id = TTAC_OPT_IPV4,            .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "IPV6",               .opt_id = TTAC_OPT_IPV6,            .opt_type = TTAC_OTYPE_FLAG },
+   { .opt_name = "KEY",                .opt_id = TTAC_OPT_KEY,             .opt_type = TTAC_OTYPE_STR },
+   { .opt_name = "NETWORK_TIMEOUT",    .opt_id = TTAC_OPT_NETWORK_TIMEOUT, .opt_type = TTAC_OTYPE_TV },
+   { .opt_name = "RANDOM",             .opt_id = TTAC_OPT_RANDOM,          .opt_type = TTAC_OTYPE_OTHER },
+   { .opt_name = "STOPINIT",           .opt_id = TTAC_OPT_STOPINIT,        .opt_type = TTAC_OTYPE_NONE },
+   { .opt_name = "TIMEOUT",            .opt_id = TTAC_OPT_TIMEOUT,         .opt_type = TTAC_OTYPE_INT },
+   { .opt_name = NULL,                 .opt_id = 0,                        .opt_type = 0 }
 };
 
 
@@ -149,6 +158,13 @@ tinytac_conf_opt_int(
 static int
 tinytac_conf_opt_timeval(
          const tinytac_opt_t *         opt,
+         const char *                  value );
+
+
+static void
+tinytac_conf_print_line(
+         int                           comment,
+         const char *                  name,
          const char *                  value );
 
 
@@ -492,6 +508,98 @@ tinytac_conf_opt_timeval(
       return(TTAC_SUCCESS);
 
    return(tinytac_set_option(NULL, (int)opt->opt_id, &tv));
+}
+
+
+void
+tinytac_conf_print(
+         TinyTac *                     tt )
+{
+   size_t            pos;
+   tinytac_opt_t *   opt;
+   int               ival;
+   char *            str;
+   struct timeval *  tv;
+   char              buff[1024];
+
+   printf("# TinyTac Library Configuration:\n");
+   for(pos = 0; ((tinytac_conf_options[pos].opt_name)); pos++)
+   {
+      opt = &tinytac_conf_options[pos];
+      switch(opt->opt_type)
+      {
+         case TTAC_OTYPE_FLAG:
+         if ((tinytac_get_option(tt, (int)opt->opt_id, &ival)) == TTAC_SUCCESS)
+            tinytac_conf_print_line(0, opt->opt_name, (((ival)) ? "yes" : "no"));
+         break;
+
+         case TTAC_OTYPE_INT:
+         if ((tinytac_get_option(tt, (int)opt->opt_id, &ival)) == TTAC_SUCCESS)
+         {
+            snprintf(buff, sizeof(buff), "%i", ival);
+            tinytac_conf_print_line(0, opt->opt_name, buff);
+         };
+         break;
+
+         case TTAC_OTYPE_NONE:
+         break;
+
+         case TTAC_OTYPE_STR:
+         if ((tinytac_get_option(tt, (int)opt->opt_id, &str)) == TTAC_SUCCESS)
+         {
+            snprintf(buff, sizeof(buff), "'%s'", str);
+            tinytac_conf_print_line(0, opt->opt_name, buff);
+            free(str);
+         };
+         break;
+
+         case TTAC_OTYPE_OTHER:
+         if (opt->opt_id == TTAC_OPT_RANDOM)
+         {  if ((tinytac_get_option(tt, TTAC_OPT_RANDOM, &ival)) == TTAC_SUCCESS)
+            {  switch(ival)
+               {  case TTAC_RAND:    tinytac_conf_print_line(0, "rand", "rand"); break;
+                  case TTAC_RANDOM:  tinytac_conf_print_line(0, "rand", "random"); break;
+                  case TTAC_URANDOM: tinytac_conf_print_line(0, "rand", "urandom"); break;
+                  default:           tinytac_conf_print_line(1, "rand", "unknown option"); break;
+               };
+            };
+         };
+         break;
+
+         case TTAC_OTYPE_TV:
+         if ((tinytac_get_option(tt, (int)opt->opt_id, &tv)) == TTAC_SUCCESS)
+         {
+            snprintf(buff, sizeof(buff), "%u", (unsigned)tv->tv_sec);
+            tinytac_conf_print_line(0, opt->opt_name, buff);
+            free(tv);
+         };
+         break;
+
+         case TTAC_OTYPE_UINT:
+         if ((tinytac_get_option(tt, (int)opt->opt_id, &ival)) == TTAC_SUCCESS)
+         {
+            snprintf(buff, sizeof(buff), "%u", (unsigned)ival);
+            tinytac_conf_print_line(0, opt->opt_name, buff);
+         };
+         break;
+
+         default:
+         break;
+      };
+   };
+
+   return;
+}
+
+
+void
+tinytac_conf_print_line(
+         int                           comment,
+         const char *                  name,
+         const char *                  value )
+{
+   printf("%s%-20s %s\n", (((comment)) ? "#" : ""), name, value);
+   return;
 }
 
 
